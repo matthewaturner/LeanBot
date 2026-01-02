@@ -14,7 +14,8 @@ Write-Host "Available Algorithms:" -ForegroundColor Cyan
 Write-Host "=====================" -ForegroundColor Cyan
 Write-Host ""
 
-$csFiles = Get-ChildItem -Path $scriptDir -Filter "*.cs" -File
+$strategiesDir = Join-Path $scriptDir "Strategies"
+$csFiles = Get-ChildItem -Path $strategiesDir -Filter "*.cs" -File -ErrorAction SilentlyContinue
 
 $algorithms = @()
 

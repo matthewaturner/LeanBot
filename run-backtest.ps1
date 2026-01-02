@@ -33,7 +33,6 @@ $ErrorActionPreference = "Stop"
 # Paths
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $configPath = Join-Path $scriptDir "config.json"
-$projectPath = Join-Path $scriptDir "Demo.csproj"
 $leanLauncherPath = Join-Path $scriptDir "..\Lean\Launcher\bin\Release\QuantConnect.Lean.Launcher.exe"
 
 Write-Host ""
