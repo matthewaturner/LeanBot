@@ -27,15 +27,13 @@ public class BuyAndHoldXOM : QCAlgorithm
     public override void Initialize()
     {
         // Set the backtest date range from January 1, 2020 to January 1, 2026
-        // Note: Using 2013 dates for demo with available SPY data
-        SetStartDate(2013, 10, 7);
-        SetEndDate(2013, 10, 11);
+        SetStartDate(2016, 1, 2);
+        SetEndDate(2021, 1, 2);
         
         // Set starting cash to $100,000
         SetCash(100000);
 
-        // Using SPY for demo (XOM data would need to be downloaded)
-        // To use XOM: ensure XOM data is in ../Lean/Data/equity/usa/daily/xom.zip
+        // Using SPY for demo
         _symbol = AddEquity("SPY", Resolution.Daily).Symbol;
 
         // Log initialization

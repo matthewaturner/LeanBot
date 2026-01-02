@@ -1,6 +1,10 @@
 """
 Simple backtest visualization script for Lean results
 Generates an HTML report with equity curve, drawdown, and key statistics
+
+Usage:
+    python visualize_backtest.py                    # Visualize most recent backtest
+    python visualize_backtest.py <folder_name>      # Visualize specific backtest folder
 """
 
 import json
@@ -10,6 +14,9 @@ import matplotlib.dates as mdates
 from datetime import datetime
 from base64 import b64encode
 import io
+import sys
+import os
+from pathlib import Path
 
 def load_results(json_file):
     """Load backtest results from JSON file"""
@@ -326,10 +333,83 @@ def generate_html_report(data, equity_chart_b64, drawdown_chart_b64, output_file
     
     print(f"Report generated successfully: {output_file}")
 
+def get_most_recent_results_folder(results_dir="Results"):
+    """Find the most recent backtest folder based on timestamp"""
+    results_path = Path(results_dir)
+    
+    if not results_path.exists():
+        raise FileNotFoundError(f"Results directory not found: {results_dir}")
+    
+    # Get all subdirectories
+    folders = [f for f in results_path.iterdir() if f.is_dir()]
+    
+    if not folders:
+        raise FileNotFoundError(f"No backtest folders found in {results_dir}")
+    
+    # Sort by modification time (most recent first)
+    folders.sort(key=lambda x: x.stat().st_mtime, reverse=True)
+    
+    return folders[0]
+
+def find_json_file(folder_path):
+    """Find the JSON results file in the folder"""
+    folder = Path(folder_path)
+    
+    # Extract strategy name from folder name (e.g., "BuyAndHoldXOM-20260101-220149" -> "BuyAndHoldXOM")
+    folder_name = folder.name
+    # Remove timestamp pattern (anything after last occurrence of -{date})
+    import re
+    strategy_name = re.sub(r'-\d{8}-\d{6}$', '', folder_name)
+    
+    # Look for {StrategyName}.json
+    json_file = folder / f"{strategy_name}.json"
+    
+    if json_file.exists():
+        return json_file
+    
+    # Fallback: look for any .json file
+    json_files = list(folder.glob("*.json"))
+    
+    if not json_files:
+        raise FileNotFoundError(f"No JSON file found in {folder_path}")
+    
+    print(f"Warning: Expected {strategy_name}.json not found, using: {json_files[0].name}")
+    return json_files[0]
+
 def main():
-    # Configuration
-    json_file = "Results/BuyAndHoldXOM.json"
-    output_file = "Results/report.html"
+    # Parse command-line arguments
+    if len(sys.argv) > 1:
+        # User specified a folder name
+        folder_name = sys.argv[1]
+        results_folder = Path("Results") / folder_name
+        
+        if not results_folder.exists():
+            print(f"❌ Error: Folder not found: {results_folder}")
+            print(f"\nAvailable folders in Results/:")
+            results_path = Path("Results")
+            if results_path.exists():
+                for folder in sorted(results_path.iterdir()):
+                    if folder.is_dir():
+                        print(f"  - {folder.name}")
+            sys.exit(1)
+        
+        print(f"📁 Using specified folder: {folder_name}")
+    else:
+        # Find most recent backtest
+        print("🔍 Finding most recent backtest...")
+        results_folder = get_most_recent_results_folder()
+        print(f"📁 Found: {results_folder.name}")
+    
+    # Find JSON file in the folder
+    try:
+        json_file = find_json_file(results_folder)
+        print(f"📄 Using results file: {json_file.name}")
+    except FileNotFoundError as e:
+        print(f"❌ Error: {e}")
+        sys.exit(1)
+    
+    # Set output file in the same folder
+    output_file = results_folder / "report.html"
     
     print("Loading backtest results...")
     data = load_results(json_file)
@@ -358,7 +438,8 @@ def main():
     print(f"  Net Profit: {data['statistics']['Net Profit']}")
     print(f"  Sharpe Ratio: {data['statistics']['Sharpe Ratio']}")
     print(f"  Max Drawdown: {data['statistics']['Drawdown']}")
-    print(f"\n✅ Open {output_file} in your browser to view the full report!")
+    print(f"\n✅ Report saved to: {output_file}")
+    print(f"   Open this file in your browser to view the full report!")
 
 if __name__ == "__main__":
     main()

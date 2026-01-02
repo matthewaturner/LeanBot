@@ -21,7 +21,7 @@ Write-Host ""
 
 # Step 1: Build the project (unless -NoBuild is specified)
 if (-not $NoBuild) {
-    Write-Host "[1/3] Building Bot project..." -ForegroundColor Green
+    Write-Host "[1/4] Building Bot project..." -ForegroundColor Green
     Push-Location $scriptDir
     try {
         $buildOutput = dotnet build -c Release --nologo --verbosity quiet 2>&1
@@ -40,11 +40,11 @@ if (-not $NoBuild) {
         Pop-Location
     }
 } else {
-    Write-Host "[1/3] Skipping build (using existing DLL)" -ForegroundColor Yellow
+    Write-Host "[1/4] Skipping build (using existing DLL)" -ForegroundColor Yellow
 }
 
 # Step 2: Create timestamped results folder and update config
-Write-Host "[2/3] Creating results folder and updating configuration..." -ForegroundColor Green
+Write-Host "[2/4] Creating results folder and updating configuration..." -ForegroundColor Green
 
 # Create timestamped folder name
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
@@ -67,7 +67,7 @@ $config | ConvertTo-Json -Depth 10 | Set-Content $configPath
 Write-Host "      [OK] Config updated: $originalStrategy -> $StrategyName" -ForegroundColor DarkGreen
 
 # Step 3: Run the backtest
-Write-Host "[3/3] Running backtest..." -ForegroundColor Green
+Write-Host "[3/4] Running backtest..." -ForegroundColor Green
 Write-Host ""
 Write-Host "================================================" -ForegroundColor DarkGray
 
@@ -95,5 +95,10 @@ Write-Host ""
 Write-Host "Results location: " -NoNewline
 Write-Host $resultsPath -ForegroundColor Cyan
 Write-Host ""
+
+Write-Host "[4/4] Running visualization..." -ForegroundColor Green
+if ($exitCode -eq 0) {
+    & "$scriptDir\vis.ps1" -FolderName $resultsFolderName
+}
 
 exit $exitCode
