@@ -2,7 +2,7 @@
  * Buy and Hold XOM Algorithm
  * 
  * This is a simple buy and hold algorithm that:
- * 1. Buys ExxonMobil (XOM) stock at the start
+ * 1. Buys SPY at the start
  * 2. Holds it throughout the backtest period
  * 3. Demonstrates the basic usage of QuantConnect's Lean engine
  */

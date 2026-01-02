@@ -1,9 +1,9 @@
 {
-    "environment":  "backtesting",
-    "algorithm-type-name":  "BuyAndHoldXOM",
-    "algorithm-language":  "CSharp",
-    "algorithm-location":  "c:/Users/matur/source/personal/LeanBot/LeanBot/bin/Release/net10.0/Bot.dll",
-    "data-folder":  "c:/Users/matur/source/personal/LeanBot/Lean/Data/",
+    "_comment": "Global LEAN configuration - strategy-specific settings go in Strategies/<name>/config.json",
+    "environment": "backtesting",
+    "algorithm-language": "CSharp",
+    "algorithm-location": "c:/Users/matur/source/personal/LeanBot/LeanBot/bin/Release/net10.0/Bot.dll",
+    "data-folder": "c:/Users/matur/source/personal/LeanBot/Lean/Data/",
     "debugging":  false,
     "debugging-method":  "LocalCmdline",
     "log-handler":  "QuantConnect.Logging.CompositeLogHandler",
@@ -15,6 +15,7 @@
     "data-provider":  "QuantConnect.Lean.Engine.DataFeeds.DefaultDataProvider",
     "data-channel-provider":  "DataChannelProvider",
     "object-store":  "QuantConnect.Lean.Engine.Storage.LocalObjectStore",
+    "object-store-root":  "./Storage",
     "data-aggregator":  "QuantConnect.Lean.Engine.DataFeeds.AggregationManager",
     "symbol-minute-limit":  10000,
     "symbol-second-limit":  10000,
@@ -31,11 +32,11 @@
     "close-automatically":  true,
     "results-destination-folder":  "./Results",
     "backtesting":  {
-                        "result-handler":  "QuantConnect.Lean.Engine.Results.BacktestingResultHandler",
-                        "setup-handler":  "QuantConnect.Lean.Engine.Setup.BacktestingSetupHandler",
-                        "data-feed-handler":  "QuantConnect.Lean.Engine.DataFeeds.FileSystemDataFeed",
-                        "real-time-handler":  "QuantConnect.Lean.Engine.RealTime.BacktestingRealTimeHandler",
-                        "history-provider":  "QuantConnect.Lean.Engine.HistoricalData.SubscriptionDataReaderHistoryProvider",
-                        "transaction-handler":  "QuantConnect.Lean.Engine.TransactionHandlers.BacktestingTransactionHandler"
-                    }
+        "result-handler":  "QuantConnect.Lean.Engine.Results.BacktestingResultHandler",
+        "setup-handler":  "QuantConnect.Lean.Engine.Setup.BacktestingSetupHandler",
+        "data-feed-handler":  "QuantConnect.Lean.Engine.DataFeeds.FileSystemDataFeed",
+        "real-time-handler":  "QuantConnect.Lean.Engine.RealTime.BacktestingRealTimeHandler",
+        "history-provider":  "QuantConnect.Lean.Engine.HistoricalData.SubscriptionDataReaderHistoryProvider",
+        "transaction-handler":  "QuantConnect.Lean.Engine.TransactionHandlers.BacktestingTransactionHandler"
+    }
 }

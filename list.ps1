@@ -14,30 +14,32 @@ Write-Host "Available Strategies:" -ForegroundColor Cyan
 Write-Host ""
 
 $strategiesDir = Join-Path $scriptDir "Strategies"
-$csFiles = Get-ChildItem -Path $strategiesDir -Filter "*.cs" -File -ErrorAction SilentlyContinue
+$strategyFolders = Get-ChildItem -Path $strategiesDir -Directory -ErrorAction SilentlyContinue
 
-$algorithms = @()
-
-foreach ($file in $csFiles) {
-    $content = Get-Content $file.FullName -Raw
-    
-    # Look for class definitions that inherit from QCAlgorithm
-    if ($content -match 'class\s+(\w+)\s*:\s*QCAlgorithm') {
-        $className = $matches[1]
-        $algorithms += @{
-            Name = $className
-            File = $file.Name
-        }
-    }
-}
-
-if ($algorithms.Count -eq 0) {
+if ($strategyFolders.Count -eq 0) {
     Write-Host "No strategies found." -ForegroundColor Yellow
 } else {
-    $algorithms | Sort-Object -Property Name | ForEach-Object {
+    $strategyFolders | Sort-Object -Property Name | ForEach-Object {
+        $strategyName = $_.Name
+        $strategyFile = Join-Path $_.FullName "Strategy.cs"
+        $configFile = Join-Path $_.FullName "config.json"
+        
+        # Check if Strategy.cs exists
+        $hasStrategy = Test-Path $strategyFile
+        $hasConfig = Test-Path $configFile
+        
         Write-Host "  - " -NoNewline -ForegroundColor Green
-        Write-Host $_.Name -NoNewline -ForegroundColor White
-        Write-Host " ($($_.File))" -ForegroundColor DarkGray
+        Write-Host $strategyName -NoNewline -ForegroundColor White
+        
+        if ($hasConfig) {
+            Write-Host " (custom config)" -NoNewline -ForegroundColor DarkCyan
+        }
+        
+        if (-not $hasStrategy) {
+            Write-Host " [WARNING: Missing Strategy.cs]" -NoNewline -ForegroundColor Yellow
+        }
+        
+        Write-Host ""
     }
 }
 

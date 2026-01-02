@@ -7,8 +7,22 @@ $ErrorActionPreference = "Stop"
 
 # Paths
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$configPath = Join-Path $scriptDir "config.json"
+$globalConfigPath = Join-Path $scriptDir "config.json"
+$strategyDir = Join-Path (Join-Path $scriptDir "Strategies") $StrategyName
+$strategyConfigPath = Join-Path $strategyDir "config.json"
 $leanLauncherPath = Join-Path $scriptDir "..\Lean\Launcher\bin\Release\QuantConnect.Lean.Launcher.exe"
+
+# Validate strategy folder exists
+if (-not (Test-Path $strategyDir)) {
+    Write-Host ""
+    Write-Host "Error: Strategy folder not found: $strategyDir" -ForegroundColor Red
+    Write-Host "Available strategies:" -ForegroundColor Yellow
+    Get-ChildItem (Join-Path $scriptDir "Strategies") -Directory | ForEach-Object {
+        Write-Host "  - $($_.Name)" -ForegroundColor Cyan
+    }
+    Write-Host ""
+    exit 1
+}
 
 Write-Host ""
 Write-Host "================================================" -ForegroundColor Cyan
@@ -43,8 +57,43 @@ if (-not $NoBuild) {
     Write-Host "[1/4] Skipping build (using existing DLL)" -ForegroundColor Yellow
 }
 
-# Step 2: Create timestamped results folder and update config
-Write-Host "[2/4] Creating results folder and updating configuration..." -ForegroundColor Green
+# Step 2: Create timestamped results folder and merge configuration
+Write-Host "[2/4] Merging configuration and creating results folder..." -ForegroundColor Green
+
+# Load global config
+$globalConfig = Get-Content $globalConfigPath -Raw | ConvertFrom-Json
+
+# Load strategy-specific config if it exists
+$strategyConfig = $null
+if (Test-Path $strategyConfigPath) {
+    $strategyConfig = Get-Content $strategyConfigPath -Raw | ConvertFrom-Json
+    Write-Host "      [OK] Found strategy-specific config" -ForegroundColor DarkGreen
+}
+
+# Merge configs: strategy config overrides global config
+function Merge-Config {
+    param($base, $override)
+    
+    if ($null -eq $override) {
+        return $base
+    }
+    
+    # Convert to hashtables for easier merging
+    $baseHash = @{}
+    $base.PSObject.Properties | ForEach-Object { $baseHash[$_.Name] = $_.Value }
+    
+    # Override properties from strategy config
+    $override.PSObject.Properties | ForEach-Object {
+        if ($_.Name -ne "_comment") {  # Skip comments
+            $baseHash[$_.Name] = $_.Value
+        }
+    }
+    
+    # Convert back to PSCustomObject
+    return [PSCustomObject]$baseHash
+}
+
+$mergedConfig = Merge-Config -base $globalConfig -override $strategyConfig
 
 # Create timestamped folder name
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
@@ -53,18 +102,15 @@ $resultsPath = Join-Path (Join-Path $scriptDir "Results") $resultsFolderName
 
 # Create the directory
 $null = New-Item -ItemType Directory -Path $resultsPath -Force
-# Write-Host "      [OK] Created results folder: $resultsFolderName" -ForegroundColor DarkGreen
 
-# Update config with algorithm name and results path
-$config = Get-Content $configPath -Raw | ConvertFrom-Json
-$originalStrategy = $config.'algorithm-type-name'
-$originalResultsPath = $config.'results-destination-folder'
-$config.'algorithm-type-name' = $StrategyName
-$config.'results-destination-folder' = $resultsPath
+# Set runtime-specific values
+$mergedConfig.'results-destination-folder' = $resultsPath
 
-$config | ConvertTo-Json -Depth 10 | Set-Content $configPath
+# Write merged config to a temporary file
+$tempConfigPath = Join-Path $scriptDir "config.temp.json"
+$mergedConfig | ConvertTo-Json -Depth 10 | Set-Content $tempConfigPath
 
-Write-Host "      [OK] Config updated: $originalStrategy -> $StrategyName" -ForegroundColor DarkGreen
+Write-Host "      [OK] Config merged and results folder created" -ForegroundColor DarkGreen
 
 # Step 3: Run the backtest
 Write-Host "[3/4] Running backtest..." -ForegroundColor Green
@@ -72,14 +118,14 @@ Write-Host ""
 Write-Host "================================================" -ForegroundColor DarkGray
 
 try {
-    & $leanLauncherPath --config $configPath
+    & $leanLauncherPath --config $tempConfigPath
     $exitCode = $LASTEXITCODE
 }
 finally {
-    # Restore original config
-    $config.'algorithm-type-name' = $originalStrategy
-    $config.'results-destination-folder' = $originalResultsPath
-    $config | ConvertTo-Json -Depth 10 | Set-Content $configPath
+    # Clean up temporary config file
+    if (Test-Path $tempConfigPath) {
+        Remove-Item $tempConfigPath -Force
+    }
 }
 
 Write-Host "================================================" -ForegroundColor DarkGray

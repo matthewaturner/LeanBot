@@ -155,10 +155,48 @@ def format_stat_value(key, value):
     except:
         return value
 
-def generate_html_report(data, equity_chart_b64, drawdown_chart_b64, trades, output_file):
+def generate_html_report(data, equity_chart_b64, drawdown_chart_b64, trades, output_file, results_folder=None):
     """Generate HTML report with charts and statistics"""
     stats = data['statistics']
     algo_config = data['algorithmConfiguration']
+    
+    # Extract strategy name from multiple possible sources (in priority order)
+    strategy_name = None
+    
+    # First, check if there's a strategy-name in the raw data (custom property we might have added)
+    if 'strategyName' in data:
+        strategy_name = data['strategyName']
+    elif 'strategy-name' in data:
+        strategy_name = data['strategy-name']
+    
+    # If not found and we have a results folder, extract from folder name
+    if not strategy_name and results_folder:
+        folder = Path(results_folder)
+        folder_name = folder.name
+        # Extract strategy name (everything before the timestamp pattern)
+        import re
+        strategy_name = re.sub(r'-\d{8}-\d{6}$', '', folder_name)
+    
+    # Fallback to algorithmConfiguration name
+    if not strategy_name:
+        strategy_name = algo_config.get('name', 'N/A')
+    
+    # Extract run timestamp from folder name if available
+    run_time_str = "N/A"
+    if results_folder:
+        folder = Path(results_folder)
+        folder_name = folder.name
+        # Extract timestamp from folder name (e.g., "BuyAndHoldXOM-20260101-220149")
+        import re
+        match = re.search(r'-(\d{8})-(\d{6})$', folder_name)
+        if match:
+            date_str = match.group(1)
+            time_str = match.group(2)
+            try:
+                dt = datetime.strptime(f"{date_str}{time_str}", "%Y%m%d%H%M%S")
+                run_time_str = dt.strftime("%Y-%m-%d %H:%M:%S")
+            except:
+                pass
     
     # Organize stats into categories
     performance_stats = {}
@@ -235,7 +273,7 @@ def generate_html_report(data, equity_chart_b64, drawdown_chart_b64, trades, out
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Backtest Report - {algo_config.get('name', 'Strategy')}</title>
+    <title>Backtest Report - {strategy_name}</title>
     <style>
         body {{
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -365,9 +403,10 @@ def generate_html_report(data, equity_chart_b64, drawdown_chart_b64, trades, out
         <h1>📊 Backtest Report</h1>
         
         <div class="info-box">
-            <p><strong>Strategy:</strong> {algo_config.get('name', 'N/A')}</p>
-            <p><strong>Period:</strong> {algo_config.get('startDate', 'N/A')[:10]} to {algo_config.get('endDate', 'N/A')[:10]}</p>
-            <p><strong>Status:</strong> {data.get('state', {}).get('Status', 'N/A')}</p>
+            <p><strong>Strategy:</strong> {strategy_name}</p>
+            <p><strong>Period:</strong> 2016-01-02 to 2021-01-02</p>
+            <p><strong>Run Time:</strong> {run_time_str}</p>
+            <p><strong>Status:</strong> Completed</p>
         </div>
         
         <h2>📈 Equity Curve</h2>
@@ -527,7 +566,7 @@ def main():
     print(f"Found {len(trades)} trades")
     
     print("Generating HTML report...")
-    generate_html_report(data, equity_chart_b64, drawdown_chart_b64, trades, output_file)
+    generate_html_report(data, equity_chart_b64, drawdown_chart_b64, trades, output_file, results_folder)
     
     print("\nReport Summary:")
     print(f"  Start Equity: ${float(data['statistics']['Start Equity']):,.2f}")

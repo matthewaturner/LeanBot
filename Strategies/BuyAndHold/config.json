@@ -1,0 +1,6 @@
+{
+    "_comment": "Strategy-specific configuration that overrides global settings",
+    "strategy-name": "BuyAndHold",
+    "algorithm-type-name": "BuyAndHold",
+    "close-automatically": true
+}
