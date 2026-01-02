@@ -1,7 +1,7 @@
 /*
- * Buy and Hold XOM Algorithm
+ * Buy and Hold Strategy
  * 
- * This is a simple buy and hold algorithm that:
+ * This is a simple buy and hold strategy that:
  * 1. Buys SPY at the start
  * 2. Holds it throughout the backtest period
  * 3. Demonstrates the basic usage of QuantConnect's Lean engine
@@ -14,8 +14,7 @@ using QuantConnect.Data;
 namespace Bot.Strategies;
 
 /// <summary>
-/// Buy and hold algorithm for XOM (ExxonMobil) stock
-/// Modified to use SPY for demo purposes (sample data available)
+/// Buy and hold strategy for SPY.
 /// </summary>
 public class BuyAndHold : QCAlgorithm
 {

@@ -31,7 +31,24 @@ if ($FolderName) {
 } else {
     Write-Host "Visualizing most recent backtest" -ForegroundColor Yellow
     Write-Host ""
-    & python $pythonScript
+    
+    # Find the most recent result folder (recursively) and pass relative path to Python
+    $resultsPath = Join-Path $scriptDir "Results"
+    $mostRecentFolder = Get-ChildItem -Path $resultsPath -Directory -Recurse |
+        Where-Object { 
+            # Only consider folders that match the timestamp pattern (end with -YYYYMMDD-HHMMSS)
+            $_.Name -match '-\d{8}-\d{6}$'
+        } |
+        Sort-Object LastWriteTime -Descending |
+        Select-Object -First 1
+    
+    if ($mostRecentFolder) {
+        # Get the relative path from Results directory
+        $relativePath = $mostRecentFolder.FullName.Substring($resultsPath.Length + 1)
+        & python $pythonScript $relativePath
+    } else {
+        & python $pythonScript
+    }
 }
 
 $exitCode = $LASTEXITCODE
@@ -47,10 +64,15 @@ if ($exitCode -ne 0) {
 $resultsPath = Join-Path $scriptDir "Results"
 
 if ($FolderName) {
-    $htmlFile = Join-Path (Join-Path $resultsPath $FolderName) "report.html"
+    # Handle nested paths by converting slashes to backslashes
+    $normalizedPath = $FolderName.Replace('/', '\')
+    $htmlFile = Join-Path $resultsPath "$normalizedPath\report.html"
 } else {
-    # Find the most recent folder
-    $mostRecentFolder = Get-ChildItem -Path $resultsPath -Directory | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+    # Find the most recent folder (recursively search all subdirectories)
+    $mostRecentFolder = Get-ChildItem -Path $resultsPath -Directory -Recurse | 
+        Where-Object { Test-Path (Join-Path $_.FullName "report.html") } |
+        Sort-Object LastWriteTime -Descending | 
+        Select-Object -First 1
     if ($mostRecentFolder) {
         $htmlFile = Join-Path $mostRecentFolder.FullName "report.html"
     }

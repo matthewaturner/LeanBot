@@ -8,18 +8,46 @@ $ErrorActionPreference = "Stop"
 # Paths
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $globalConfigPath = Join-Path $scriptDir "config.json"
-$strategyDir = Join-Path (Join-Path $scriptDir "Strategies") $StrategyName
-$strategyConfigPath = Join-Path $strategyDir "config.json"
+$strategiesBaseDir = Join-Path $scriptDir "Strategies"
 $leanLauncherPath = Join-Path $scriptDir "..\Lean\Launcher\bin\Release\QuantConnect.Lean.Launcher.exe"
 
-# Validate strategy folder exists
-if (-not (Test-Path $strategyDir)) {
-    Write-Host ""
-    Write-Host "Error: Strategy folder not found: $strategyDir" -ForegroundColor Red
-    Write-Host "Available strategies:" -ForegroundColor Yellow
-    Get-ChildItem (Join-Path $scriptDir "Strategies") -Directory | ForEach-Object {
-        Write-Host "  - $($_.Name)" -ForegroundColor Cyan
+# Function to find strategy folder (supports nested paths)
+function Find-StrategyFolder {
+    param($BasePath, $StrategyName)
+    
+    # First try direct path (handles nested paths like "EpChan/QuantitativeTrading/Ex3_4")
+    $directPath = Join-Path $BasePath $StrategyName.Replace('/', '\')
+    if ((Test-Path $directPath) -and (Test-Path (Join-Path $directPath "Strategy.cs"))) {
+        return $directPath
     }
+    
+    # Search recursively for matching folder name
+    Get-ChildItem -Path $BasePath -Directory -Recurse -ErrorAction SilentlyContinue | Where-Object {
+        $_.Name -eq $StrategyName -and (Test-Path (Join-Path $_.FullName "Strategy.cs"))
+    } | Select-Object -First 1 -ExpandProperty FullName
+}
+
+$strategyDir = Find-StrategyFolder -BasePath $strategiesBaseDir -StrategyName $StrategyName
+$strategyConfigPath = if ($strategyDir) { Join-Path $strategyDir "config.json" } else { $null }
+
+# Validate strategy folder exists
+if (-not $strategyDir) {
+    Write-Host ""
+    Write-Host "Error: Strategy not found: $StrategyName" -ForegroundColor Red
+    Write-Host "Available strategies:" -ForegroundColor Yellow
+    
+    function List-Strategies {
+        param($BasePath, $Prefix = "")
+        Get-ChildItem -Path $BasePath -Directory -ErrorAction SilentlyContinue | ForEach-Object {
+            $strategyFile = Join-Path $_.FullName "Strategy.cs"
+            if (Test-Path $strategyFile) {
+                Write-Host "  - $Prefix$($_.Name)" -ForegroundColor Cyan
+            }
+            List-Strategies -BasePath $_.FullName -Prefix "$Prefix$($_.Name)/"
+        }
+    }
+    
+    List-Strategies -BasePath $strategiesBaseDir
     Write-Host ""
     exit 1
 }

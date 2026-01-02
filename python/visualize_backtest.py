@@ -131,8 +131,15 @@ def create_drawdown_chart(drawdown_df):
 
 def format_stat_value(key, value):
     """Format statistics values for display"""
+    # Unitless ratios (Sharpe, Sortino, Information Ratio, etc.) - display as regular numbers
+    if any(x in key.lower() for x in ['sharpe', 'sortino', 'information ratio']):
+        try:
+            return f"{float(value):.4f}" if value else "0.0000"
+        except:
+            return value
+    
     # Percentage metrics
-    if any(x in key.lower() for x in ['rate', 'return', 'ratio', 'drawdown', 'variance', 'turnover', 'deviation']):
+    if any(x in key.lower() for x in ['rate', 'return', 'drawdown', 'variance', 'turnover', 'deviation']):
         try:
             return f"{float(value):.2%}" if value else "0.00%"
         except:
@@ -466,14 +473,15 @@ def generate_html_report(data, equity_chart_b64, drawdown_chart_b64, trades, out
     print(f"Report generated successfully: {output_file}")
 
 def get_most_recent_results_folder(results_dir="Results"):
-    """Find the most recent backtest folder based on timestamp"""
+    """Find the most recent backtest folder based on timestamp (supports nested folders)"""
     results_path = Path(results_dir)
     
     if not results_path.exists():
         raise FileNotFoundError(f"Results directory not found: {results_dir}")
     
-    # Get all subdirectories
-    folders = [f for f in results_path.iterdir() if f.is_dir()]
+    # Recursively get all subdirectories that match the timestamp pattern
+    import re
+    folders = [f for f in results_path.rglob("*") if f.is_dir() and re.search(r'-\d{8}-\d{6}$', f.name)]
     
     if not folders:
         raise FileNotFoundError(f"No backtest folders found in {results_dir}")
