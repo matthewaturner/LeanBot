@@ -17,7 +17,7 @@ namespace Bot.Strategies;
 /// Buy and hold algorithm for XOM (ExxonMobil) stock
 /// Modified to use SPY for demo purposes (sample data available)
 /// </summary>
-public class BuyAndHoldXOM : QCAlgorithm
+public class BuyAndHold : QCAlgorithm
 {
     private Symbol _symbol;
 

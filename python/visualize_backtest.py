@@ -23,6 +23,36 @@ def load_results(json_file):
     with open(json_file, 'r') as f:
         return json.load(f)
 
+def load_order_events(folder_path):
+    """Load order events (trades) from order-events.json file"""
+    folder = Path(folder_path)
+    
+    # Extract strategy name from folder name
+    folder_name = folder.name
+    import re
+    strategy_name = re.sub(r'-\d{8}-\d{6}$', '', folder_name)
+    
+    # Look for {StrategyName}-order-events.json
+    order_events_file = folder / f"{strategy_name}-order-events.json"
+    
+    if not order_events_file.exists():
+        # Fallback: look for any order-events.json file
+        order_events_files = list(folder.glob("*-order-events.json"))
+        if not order_events_files:
+            print(f"⚠️  Warning: No order events file found")
+            return []
+        order_events_file = order_events_files[0]
+    
+    try:
+        with open(order_events_file, 'r') as f:
+            events = json.load(f)
+            # Filter to only filled orders (actual trades)
+            trades = [e for e in events if e.get('status') == 'filled']
+            return trades
+    except Exception as e:
+        print(f"⚠️  Warning: Could not load order events: {e}")
+        return []
+
 def extract_equity_series(data):
     """Extract equity time series from charts data"""
     equity_data = data['charts']['Strategy Equity']['series']['Equity']['values']
@@ -125,7 +155,7 @@ def format_stat_value(key, value):
     except:
         return value
 
-def generate_html_report(data, equity_chart_b64, drawdown_chart_b64, output_file):
+def generate_html_report(data, equity_chart_b64, drawdown_chart_b64, trades, output_file):
     """Generate HTML report with charts and statistics"""
     stats = data['statistics']
     algo_config = data['algorithmConfiguration']
@@ -143,6 +173,61 @@ def generate_html_report(data, equity_chart_b64, drawdown_chart_b64, output_file
             risk_stats[key] = format_stat_value(key, value)
         else:
             trade_stats[key] = format_stat_value(key, value)
+    
+    # Generate trades table HTML
+    trades_html = ""
+    if trades:
+        trades_html = """
+        <h2>📋 All Trades</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Time</th>
+                    <th>Symbol</th>
+                    <th>Direction</th>
+                    <th>Quantity</th>
+                    <th>Fill Price</th>
+                    <th>Total Value</th>
+                    <th>Fee</th>
+                </tr>
+            </thead>
+            <tbody>
+"""
+        for trade in trades:
+            trade_time = datetime.fromtimestamp(trade['time']).strftime('%Y-%m-%d %H:%M:%S')
+            symbol = trade.get('symbolValue', trade.get('symbol', 'N/A'))
+            direction = trade['direction'].upper()
+            quantity = trade['fillQuantity']
+            fill_price = trade['fillPrice']
+            total_value = abs(quantity * fill_price)
+            fee = trade.get('orderFeeAmount', 0)
+            order_id = trade['orderId']
+            
+            direction_class = 'buy' if direction == 'BUY' else 'sell'
+            
+            trades_html += f"""
+                <tr class="{direction_class}">
+                    <td>{order_id}</td>
+                    <td>{trade_time}</td>
+                    <td>{symbol}</td>
+                    <td><strong>{direction}</strong></td>
+                    <td>{quantity:,.0f}</td>
+                    <td>${fill_price:,.2f}</td>
+                    <td>${total_value:,.2f}</td>
+                    <td>${fee:,.2f}</td>
+                </tr>
+"""
+        
+        trades_html += """
+            </tbody>
+        </table>
+"""
+    else:
+        trades_html = """
+        <h2>📋 All Trades</h2>
+        <p style="color: #7f8c8d; text-align: center; padding: 20px;">No trade data available</p>
+"""
     
     html_content = f"""
 <!DOCTYPE html>
@@ -259,6 +344,12 @@ def generate_html_report(data, equity_chart_b64, drawdown_chart_b64, output_file
         tr:hover {{
             background-color: #f5f5f5;
         }}
+        tr.buy {{
+            border-left: 3px solid #27ae60;
+        }}
+        tr.sell {{
+            border-left: 3px solid #e74c3c;
+        }}
         .footer {{
             margin-top: 50px;
             padding-top: 20px;
@@ -319,6 +410,8 @@ def generate_html_report(data, equity_chart_b64, drawdown_chart_b64, output_file
                 {''.join([f'<tr><td>{k}</td><td>{v}</td></tr>' for k, v in stats.items()])}
             </tbody>
         </table>
+        
+        {trades_html}
         
         <div class="footer">
             <p>Generated with Lean Algorithmic Trading Engine | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
@@ -429,8 +522,12 @@ def main():
     drawdown_chart_b64 = fig_to_base64(drawdown_fig)
     plt.close(drawdown_fig)
     
+    print("Loading trade data...")
+    trades = load_order_events(results_folder)
+    print(f"Found {len(trades)} trades")
+    
     print("Generating HTML report...")
-    generate_html_report(data, equity_chart_b64, drawdown_chart_b64, output_file)
+    generate_html_report(data, equity_chart_b64, drawdown_chart_b64, trades, output_file)
     
     print("\nReport Summary:")
     print(f"  Start Equity: ${float(data['statistics']['Start Equity']):,.2f}")
