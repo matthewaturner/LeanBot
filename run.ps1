@@ -1,30 +1,5 @@
-#!/usr/bin/env pwsh
-<#
-.SYNOPSIS
-    Run a QuantConnect LEAN backtest with the specified algorithm.
-
-.DESCRIPTION
-    This script builds the Demo project and runs a backtest with the specified algorithm name.
-    No need to manually copy DLLs or edit config files!
-
-.PARAMETER AlgorithmName
-    The name of the algorithm class to run (e.g., "PairsTradingCsvData", "BuyAndHoldXOM")
-
-.PARAMETER NoBuild
-    Skip the build step (useful if you haven't changed the code)
-
-.EXAMPLE
-    .\run-backtest.ps1 PairsTradingCsvData
-    
-.EXAMPLE
-    .\run-backtest.ps1 BuyAndHoldXOM -NoBuild
-#>
-
 param(
-    [Parameter(Mandatory=$true, Position=0)]
     [string]$StrategyName,
-    
-    [Parameter(Mandatory=$false)]
     [switch]$NoBuild
 )
 
@@ -74,11 +49,11 @@ Write-Host "[2/3] Creating results folder and updating configuration..." -Foregr
 # Create timestamped folder name
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $resultsFolderName = "$StrategyName-$timestamp"
-$resultsPath = Join-Path $scriptDir "Results" $resultsFolderName
+$resultsPath = Join-Path (Join-Path $scriptDir "Results") $resultsFolderName
 
 # Create the directory
-New-Item -ItemType Directory -Path $resultsPath -Force | Out-Null
-Write-Host "      [OK] Created results folder: $resultsFolderName" -ForegroundColor DarkGreen
+$null = New-Item -ItemType Directory -Path $resultsPath -Force
+# Write-Host "      [OK] Created results folder: $resultsFolderName" -ForegroundColor DarkGreen
 
 # Update config with algorithm name and results path
 $config = Get-Content $configPath -Raw | ConvertFrom-Json
@@ -89,7 +64,7 @@ $config.'results-destination-folder' = $resultsPath
 
 $config | ConvertTo-Json -Depth 10 | Set-Content $configPath
 
-Write-Host "      [OK] Config updated: $originalStrategy → $StrategyName" -ForegroundColor DarkGreen
+Write-Host "      [OK] Config updated: $originalStrategy -> $StrategyName" -ForegroundColor DarkGreen
 
 # Step 3: Run the backtest
 Write-Host "[3/3] Running backtest..." -ForegroundColor Green
