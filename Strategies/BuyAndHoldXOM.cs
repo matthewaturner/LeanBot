@@ -11,7 +11,7 @@ using QuantConnect;
 using QuantConnect.Algorithm;
 using QuantConnect.Data;
 
-namespace Demo.Strategies;
+namespace Bot.Strategies;
 
 /// <summary>
 /// Buy and hold algorithm for XOM (ExxonMobil) stock

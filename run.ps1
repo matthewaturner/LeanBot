@@ -21,7 +21,7 @@ Write-Host ""
 
 # Step 1: Build the project (unless -NoBuild is specified)
 if (-not $NoBuild) {
-    Write-Host "[1/3] Building Demo project..." -ForegroundColor Green
+    Write-Host "[1/3] Building Bot project..." -ForegroundColor Green
     Push-Location $scriptDir
     try {
         $buildOutput = dotnet build -c Release --nologo --verbosity quiet 2>&1
