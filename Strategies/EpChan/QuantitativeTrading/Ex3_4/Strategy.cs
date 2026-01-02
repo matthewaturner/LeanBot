@@ -37,18 +37,9 @@ public class Ex3_4 : QCAlgorithm
         // Set starting cash to $100,000
         SetCash(100000);
 
-        // Set risk-free rate to 0.04 (4% annual) for Sharpe ratio calculation
-        SetRiskFreeInterestRateModel(new ConstantRiskFreeRateInterestRateModel(0.04m));
-
         // Add custom data for IGE
         _igeSymbol = AddData<IGEData>("IGE").Symbol;
-
-        // Set zero slippage model (no slippage)
-        Securities[_igeSymbol].SetSlippageModel(new ConstantSlippageModel(0));
         
-        // Set zero fee model (no transaction fees)
-        Securities[_igeSymbol].SetFeeModel(new ConstantFeeModel(0));
-
         // Log initialization
         Debug("Algorithm initialized: Example 3.4 - Buy and Hold IGE");
         Debug("Configuration: No slippage, No fees, Risk-free rate = 0.04");
@@ -80,13 +71,7 @@ public class Ex3_4 : QCAlgorithm
     /// </summary>
     public override void OnEndOfAlgorithm()
     {
-        var stats = Statistics;
         Debug($"Algorithm completed. Final portfolio value: {Portfolio.TotalPortfolioValue:C}");
-        Debug($"Total Return: {stats.TotalPerformance.PortfolioStatistics.TotalReturn:P2}");
-        Debug($"Annual Return: {stats.TotalPerformance.PortfolioStatistics.CompoundingAnnualReturn:P2}");
-        Debug($"Annual StdDev: {stats.TotalPerformance.PortfolioStatistics.AnnualStandardDeviation:P2}");
-        Debug($"Sharpe Ratio: {stats.TotalPerformance.PortfolioStatistics.SharpeRatio:F3}");
-        Debug($"Risk-Free Rate Used: 0.04");
     }
 }
 

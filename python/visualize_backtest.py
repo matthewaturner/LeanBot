@@ -27,7 +27,7 @@ def load_order_events(folder_path):
     """Load order events (trades) from order-events.json file"""
     folder = Path(folder_path)
     
-    # Extract strategy name from folder name
+    # Extract strategy name from folder name (just the immediate folder name)
     folder_name = folder.name
     import re
     strategy_name = re.sub(r'-\d{8}-\d{6}$', '', folder_name)
@@ -75,6 +75,44 @@ def extract_drawdown_series(data):
     df.set_index('date', inplace=True)
     
     return df
+
+def calculate_max_drawdown_duration(drawdown_df):
+    """
+    Calculate the maximum drawdown duration in days.
+    Duration is the number of days from peak to recovery (when drawdown returns to 0).
+    """
+    max_duration = 0
+    current_duration = 0
+    in_drawdown = False
+    start_date = None
+    
+    for date, row in drawdown_df.iterrows():
+        dd_value = row['drawdown']
+        
+        if dd_value < 0:  # In drawdown
+            if not in_drawdown:
+                # Starting a new drawdown period
+                in_drawdown = True
+                start_date = date
+                current_duration = 0
+            else:
+                # Continuing drawdown period
+                current_duration = (date - start_date).days
+                max_duration = max(max_duration, current_duration)
+        else:  # Not in drawdown (recovered to 0)
+            if in_drawdown:
+                # Just recovered
+                current_duration = (date - start_date).days
+                max_duration = max(max_duration, current_duration)
+                in_drawdown = False
+                start_date = None
+    
+    # If still in drawdown at the end
+    if in_drawdown and start_date is not None:
+        current_duration = (drawdown_df.index[-1] - start_date).days
+        max_duration = max(max_duration, current_duration)
+    
+    return max_duration
 
 def fig_to_base64(fig):
     """Convert matplotlib figure to base64 string"""
@@ -162,10 +200,14 @@ def format_stat_value(key, value):
     except:
         return value
 
-def generate_html_report(data, equity_chart_b64, drawdown_chart_b64, trades, output_file, results_folder=None):
+def generate_html_report(data, equity_chart_b64, drawdown_chart_b64, trades, output_file, max_dd_duration_days, equity_df, results_folder=None):
     """Generate HTML report with charts and statistics"""
     stats = data['statistics']
     algo_config = data['algorithmConfiguration']
+    
+    # Extract date range from equity data
+    start_date = equity_df.index[0].strftime('%Y-%m-%d')
+    end_date = equity_df.index[-1].strftime('%Y-%m-%d')
     
     # Extract strategy name from multiple possible sources (in priority order)
     strategy_name = None
@@ -176,13 +218,25 @@ def generate_html_report(data, equity_chart_b64, drawdown_chart_b64, trades, out
     elif 'strategy-name' in data:
         strategy_name = data['strategy-name']
     
-    # If not found and we have a results folder, extract from folder name
+    # If not found and we have a results folder, extract from folder path relative to Results/
     if not strategy_name and results_folder:
         folder = Path(results_folder)
-        folder_name = folder.name
-        # Extract strategy name (everything before the timestamp pattern)
+        # Find the relative path from Results/ folder up to (but not including) the timestamp suffix
+        # E.g., Results/EpChan/QuantitativeTrading/Ex3_4-20260102-123456/
+        #       -> EpChan/QuantitativeTrading/Ex3_4
         import re
-        strategy_name = re.sub(r'-\d{8}-\d{6}$', '', folder_name)
+        parts = []
+        current = folder
+        while current.name and not re.match(r'Results?$', current.name, re.IGNORECASE):
+            # If this is the timestamped folder, extract the base name without timestamp
+            if re.search(r'-\d{8}-\d{6}$', current.name):
+                base_name = re.sub(r'-\d{8}-\d{6}$', '', current.name)
+                parts.insert(0, base_name)
+                current = current.parent
+                continue
+            parts.insert(0, current.name)
+            current = current.parent
+        strategy_name = '/'.join(parts) if parts else folder.name
     
     # Fallback to algorithmConfiguration name
     if not strategy_name:
@@ -210,7 +264,19 @@ def generate_html_report(data, equity_chart_b64, drawdown_chart_b64, trades, out
     risk_stats = {}
     trade_stats = {}
     
+    # Add custom calculated metrics first
+    # Rename and add Max Drawdown and Max Drawdown Duration
+    risk_stats['Maximum Drawdown'] = format_stat_value('drawdown', stats.get('Drawdown', '0'))
+    risk_stats['Maximum Drawdown Duration (Days)'] = f"{max_dd_duration_days}"
+    
     for key, value in stats.items():
+        # Skip the original 'Drawdown' since we renamed it to 'Maximum Drawdown'
+        if key == 'Drawdown':
+            continue
+        # Skip 'Drawdown Recovery' as it's confusing - we're using our calculated duration instead
+        if key == 'Drawdown Recovery':
+            continue
+            
         key_lower = key.lower()
         if any(x in key_lower for x in ['return', 'profit', 'alpha', 'beta', 'information']):
             performance_stats[key] = format_stat_value(key, value)
@@ -411,7 +477,7 @@ def generate_html_report(data, equity_chart_b64, drawdown_chart_b64, trades, out
         
         <div class="info-box">
             <p><strong>Strategy:</strong> {strategy_name}</p>
-            <p><strong>Period:</strong> 2016-01-02 to 2021-01-02</p>
+            <p><strong>Period:</strong> {start_date} to {end_date}</p>
             <p><strong>Run Time:</strong> {run_time_str}</p>
             <p><strong>Status:</strong> Completed</p>
         </div>
@@ -560,6 +626,10 @@ def main():
     print("Extracting drawdown data...")
     drawdown_df = extract_drawdown_series(data)
     
+    print("Calculating maximum drawdown duration...")
+    max_dd_duration_days = calculate_max_drawdown_duration(drawdown_df)
+    print(f"  Max Drawdown Duration: {max_dd_duration_days} days")
+    
     print("Generating charts...")
     equity_fig = create_equity_chart(equity_df)
     equity_chart_b64 = fig_to_base64(equity_fig)
@@ -574,14 +644,15 @@ def main():
     print(f"Found {len(trades)} trades")
     
     print("Generating HTML report...")
-    generate_html_report(data, equity_chart_b64, drawdown_chart_b64, trades, output_file, results_folder)
+    generate_html_report(data, equity_chart_b64, drawdown_chart_b64, trades, output_file, max_dd_duration_days, equity_df, results_folder)
     
     print("\nReport Summary:")
     print(f"  Start Equity: ${float(data['statistics']['Start Equity']):,.2f}")
     print(f"  End Equity: ${float(data['statistics']['End Equity']):,.2f}")
     print(f"  Net Profit: {data['statistics']['Net Profit']}")
     print(f"  Sharpe Ratio: {data['statistics']['Sharpe Ratio']}")
-    print(f"  Max Drawdown: {data['statistics']['Drawdown']}")
+    print(f"  Maximum Drawdown: {data['statistics']['Drawdown']}")
+    print(f"  Maximum Drawdown Duration: {max_dd_duration_days} days")
     print(f"\n✅ Report saved to: {output_file}")
     print(f"   Open this file in your browser to view the full report!")
 
