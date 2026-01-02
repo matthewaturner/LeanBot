@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Demo</RootNamespace>
+    <LangVersion>13</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Lean\Algorithm\QuantConnect.Algorithm.csproj" />
+    <ProjectReference Include="..\Lean\Common\QuantConnect.csproj" />
+  </ItemGroup>
+
+</Project>

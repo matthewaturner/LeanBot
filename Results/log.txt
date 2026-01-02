@@ -1,0 +1,474 @@
+2026-01-02T00:20:22.4049517Z TRACE:: Engine.Main(): LEAN ALGORITHMIC TRADING ENGINE v2.5.0.0 Mode: RELEASE (64bit) Host: MATUR-DESKTOP
+2026-01-02T00:20:22.4168683Z TRACE:: Engine.Main(): Started 6:20 PM
+2026-01-02T00:20:22.4417259Z TRACE:: JobQueue.NextJob(): Selected ../../../Demo/bin/Release/net10.0/Demo.dll
+2026-01-02T00:20:54.0534903Z TRACE:: Engine.Main(): LEAN ALGORITHMIC TRADING ENGINE v2.5.0.0 Mode: RELEASE (64bit) Host: MATUR-DESKTOP
+2026-01-02T00:20:54.0609195Z TRACE:: Engine.Main(): Started 6:20 PM
+2026-01-02T00:20:54.0794608Z TRACE:: JobQueue.NextJob(): Selected c:/Users/matur/source/sandbox/Demo/bin/Release/net10.0/Demo.dll
+2026-01-02T00:20:54.3011238Z TRACE:: AlgorithmManager.CreateTokenBucket(): Initializing LeakyBucket: Capacity: 120 RefillAmount: 18 TimeInterval: 1440
+2026-01-02T00:20:54.3156920Z TRACE:: Engine.Run(): Resource limits '0' CPUs. 2147483647 MB RAM.
+2026-01-02T00:20:54.3180385Z TRACE:: TextSubscriptionDataSourceReader.SetCacheSize(): Setting cache size to 71582788 items
+2026-01-02T00:20:54.3215169Z TRACE:: Extensions.IsDirectoryEmpty(): directory '../../../Data/symbol-properties' not found or empty
+2026-01-02T00:20:54.4218072Z ERROR:: Engine.Run():  System.AggregateException: One or more errors occurred. (Unable to locate symbol properties file: ../../../Data/symbol-properties\symbol-properties-database.csv)
+ ---> System.IO.FileNotFoundException: Unable to locate symbol properties file: ../../../Data/symbol-properties\symbol-properties-database.csv
+   at QuantConnect.Securities.SymbolPropertiesDatabase.FromCsvFile(String file)+MoveNext() in Common\Securities\SymbolPropertiesDatabase.cs:line 211
+   at QuantConnect.Securities.SymbolPropertiesDatabase..ctor(String file) in Common\Securities\SymbolPropertiesDatabase.cs:line 41
+   at QuantConnect.Securities.SymbolPropertiesDatabase.FromDataFolder() in Common\Securities\SymbolPropertiesDatabase.cs:line 194
+   at QuantConnect.Lean.Engine.Engine.StaticInitializations() in Engine\Engine.cs:line 552
+   at System.Threading.Tasks.Task`1.InnerInvoke()
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+   --- End of inner exception stack trace ---
+   at System.Threading.Tasks.Task.ThrowIfExceptional(Boolean includeTaskCanceledExceptions)
+   at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+   at QuantConnect.Lean.Engine.Engine.Run(AlgorithmNodePacket job, AlgorithmManager manager, String assemblyPath, WorkerThread workerThread) in Engine\Engine.cs:line 113
+2026-01-02T00:20:54.4259791Z TRACE:: JOB HANDLERS:
+         DataFeed:             QuantConnect.Lean.Engine.DataFeeds.FileSystemDataFeed
+         Setup:                QuantConnect.Lean.Engine.Setup.ConsoleSetupHandler
+         RealTime:             QuantConnect.Lean.Engine.RealTime.BacktestingRealTimeHandler
+         Results:              QuantConnect.Lean.Engine.Results.BacktestingResultHandler
+         Transactions:         QuantConnect.Lean.Engine.TransactionHandlers.BacktestingTransactionHandler
+         Object Store:         QuantConnect.Lean.Engine.Storage.LocalObjectStore
+         History Provider:     
+         Brokerage:            
+         Data Provider:        QuantConnect.Lean.Engine.DataFeeds.DefaultDataProvider
+
+2026-01-02T00:20:54.4284960Z TRACE:: BacktestingResultHandler.Exit(): starting...
+2026-01-02T00:20:54.4304433Z TRACE:: BacktestingResultHandler.Exit(): Saving logs...
+2026-01-02T00:20:54.4373514Z TRACE:: StopSafely(): Waiting for 'Result Thread' thread to stop...
+2026-01-02T00:20:54.4436481Z ERROR:: Algorithm.Initialize() Error: One or more errors occurred. (Unable to locate symbol properties file: ../../../Data/symbol-properties\symbol-properties-database.csv) Stack Trace: System.AggregateException: One or more errors occurred. (Unable to locate symbol properties file: ../../../Data/symbol-properties\symbol-properties-database.csv)
+ ---> System.IO.FileNotFoundException: Unable to locate symbol properties file: ../../../Data/symbol-properties\symbol-properties-database.csv
+   at QuantConnect.Securities.SymbolPropertiesDatabase.FromCsvFile(String file)+MoveNext() in C:\Users\matur\source\sandbox\Lean\Common\Securities\SymbolPropertiesDatabase.cs:line 211
+   at QuantConnect.Securities.SymbolPropertiesDatabase..ctor(String file) in C:\Users\matur\source\sandbox\Lean\Common\Securities\SymbolPropertiesDatabase.cs:line 41
+   at QuantConnect.Securities.SymbolPropertiesDatabase.FromDataFolder() in C:\Users\matur\source\sandbox\Lean\Common\Securities\SymbolPropertiesDatabase.cs:line 194
+   at QuantConnect.Lean.Engine.Engine.StaticInitializations() in C:\Users\matur\source\sandbox\Lean\Engine\Engine.cs:line 552
+   at System.Threading.Tasks.Task`1.InnerInvoke()
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+   --- End of inner exception stack trace ---
+   at System.Threading.Tasks.Task.ThrowIfExceptional(Boolean includeTaskCanceledExceptions)
+   at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+   at QuantConnect.Lean.Engine.Engine.Run(AlgorithmNodePacket job, AlgorithmManager manager, String assemblyPath, WorkerThread workerThread) in C:\Users\matur\source\sandbox\Lean\Engine\Engine.cs:line 113
+ System.AggregateException: One or more errors occurred. (Unable to locate symbol properties file: ../../../Data/symbol-properties\symbol-properties-database.csv)
+ ---> System.IO.FileNotFoundException: Unable to locate symbol properties file: ../../../Data/symbol-properties\symbol-properties-database.csv
+   at QuantConnect.Securities.SymbolPropertiesDatabase.FromCsvFile(String file)+MoveNext() in C:\Users\matur\source\sandbox\Lean\Common\Securities\SymbolPropertiesDatabase.cs:line 211
+   at QuantConnect.Securities.SymbolPropertiesDatabase..ctor(String file) in C:\Users\matur\source\sandbox\Lean\Common\Securities\SymbolPropertiesDatabase.cs:line 41
+   at QuantConnect.Securities.SymbolPropertiesDatabase.FromDataFolder() in C:\Users\matur\source\sandbox\Lean\Common\Securities\SymbolPropertiesDatabase.cs:line 194
+   at QuantConnect.Lean.Engine.Engine.StaticInitializations() in C:\Users\matur\source\sandbox\Lean\Engine\Engine.cs:line 552
+   at System.Threading.Tasks.Task`1.InnerInvoke()
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+   --- End of inner exception stack trace ---
+   at System.Threading.Tasks.Task.ThrowIfExceptional(Boolean includeTaskCanceledExceptions)
+   at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+   at QuantConnect.Lean.Engine.Engine.Run(AlgorithmNodePacket job, AlgorithmManager manager, String assemblyPath, WorkerThread workerThread) in C:\Users\matur\source\sandbox\Lean\Engine\Engine.cs:line 113
+2026-01-02T00:20:54.4444777Z TRACE:: Debug: Your log was successfully created and can be retrieved from: ./Results\PairsTradingCsvData-log.txt
+2026-01-02T00:20:54.4450786Z TRACE:: BacktestingResultHandler.Run(): Ending Thread...
+2026-01-02T00:20:54.4622717Z TRACE:: BacktestingResultHandler.CreateResultSummary(): 'Strategy Equity' chart not found
+2026-01-02T00:20:54.5511446Z TRACE:: 
+STATISTICS:: OrderListHash d41d8cd98f00b204e9800998ecf8427e
+2026-01-02T00:20:54.5516566Z TRACE:: BacktestingResultHandler.SendAnalysisResult(): Processed final packet
+2026-01-02T00:20:54.5529453Z TRACE:: Engine.Run(): Disposing of setup handler...
+2026-01-02T00:20:54.5533916Z TRACE:: Engine.Main(): Analysis Completed and Results Posted.
+2026-01-02T00:20:54.5562860Z TRACE:: Engine.Main(): Packet removed from queue: PairsTradingCsvData
+2026-01-02T00:20:54.5568075Z TRACE:: LeanEngineSystemHandlers.Dispose(): start...
+2026-01-02T00:20:54.5588551Z TRACE:: LeanEngineSystemHandlers.Dispose(): Disposed of system handlers.
+2026-01-02T00:20:54.5596215Z TRACE:: LeanEngineAlgorithmHandlers.Dispose(): start...
+2026-01-02T00:20:54.5616471Z TRACE:: LocalObjectStore.Dispose(): start...
+2026-01-02T00:20:54.5619294Z TRACE:: LocalObjectStore.Dispose(): end
+2026-01-02T00:20:54.5624214Z TRACE:: LeanEngineAlgorithmHandlers.Dispose(): Disposed of algorithm handlers.
+2026-01-02T00:21:07.2537274Z TRACE:: Engine.Main(): LEAN ALGORITHMIC TRADING ENGINE v2.5.0.0 Mode: RELEASE (64bit) Host: MATUR-DESKTOP
+2026-01-02T00:21:07.2631771Z TRACE:: Engine.Main(): Started 6:21 PM
+2026-01-02T00:21:07.3042914Z TRACE:: JobQueue.NextJob(): Selected c:/Users/matur/source/sandbox/Demo/bin/Release/net10.0/Demo.dll
+2026-01-02T00:21:07.3296360Z TRACE:: AlgorithmManager.CreateTokenBucket(): Initializing LeakyBucket: Capacity: 120 RefillAmount: 18 TimeInterval: 1440
+2026-01-02T00:21:07.3365705Z TRACE:: Engine.Run(): Resource limits '0' CPUs. 2147483647 MB RAM.
+2026-01-02T00:21:07.3374202Z TRACE:: TextSubscriptionDataSourceReader.SetCacheSize(): Setting cache size to 71582788 items
+2026-01-02T00:21:08.1762606Z TRACE:: Loader.TryCreateILAlgorithm(): Loading debug information with algorithm
+2026-01-02T00:21:08.6239691Z TRACE:: Loader.TryCreateILAlgorithm(): Loaded PairsTradingCsvData
+2026-01-02T00:21:08.6321805Z TRACE:: LocalObjectStore.Initialize(): Storage Root: C:\Users\matur\source\sandbox\Demo\storage. StorageFileCount 10000. StorageLimit 10240MB. StoragePermissions Read=True Write=True Delete=True
+2026-01-02T00:21:08.6530444Z TRACE:: HistoryProviderManager.Initialize(): history providers [SubscriptionDataReaderHistoryProvider]
+2026-01-02T00:21:08.6577453Z TRACE:: BaseSetupHandler.Setup(LocalPlatform): UID: 0, PID: 0, Version: 2.5.0.0, Source: WebIDE
+2026-01-02T00:21:08.8610678Z TRACE:: BaseSetupHandler.SetupCurrencyConversions():
+Account Type: Margin
+
+Symbol      Quantity    Conversion = Value in USD
+USD: $      100000.00 @       1.00 = $100000
+-------------------------------------------------
+CashBook Total Value:                $100000
+
+2026-01-02T00:21:08.8639674Z TRACE:: Total margin information: TotalMarginUsed: 0.00, MarginRemaining: 100000.00
+2026-01-02T00:21:08.8647787Z TRACE:: SetUp Backtesting: User: 0 ProjectId: 0 AlgoId: PairsTradingCsvData
+2026-01-02T00:21:08.8698308Z TRACE:: Dates: Start: 11/30/2007 End: 05/01/2009 Cash: ¤100,000.00 MaximumRuntime: 100.00:00:00 MaxOrders: 2147483647
+2026-01-02T00:21:08.8779605Z TRACE:: BacktestingResultHandler(): Sample Period Set: 186.84
+2026-01-02T00:21:08.8800292Z TRACE:: JOB HANDLERS:
+         DataFeed:             QuantConnect.Lean.Engine.DataFeeds.FileSystemDataFeed
+         Setup:                QuantConnect.Lean.Engine.Setup.ConsoleSetupHandler
+         RealTime:             QuantConnect.Lean.Engine.RealTime.BacktestingRealTimeHandler
+         Results:              QuantConnect.Lean.Engine.Results.BacktestingResultHandler
+         Transactions:         QuantConnect.Lean.Engine.TransactionHandlers.BacktestingTransactionHandler
+         Object Store:         QuantConnect.Lean.Engine.Storage.LocalObjectStore
+         History Provider:     QuantConnect.Lean.Engine.HistoricalData.HistoryProviderManager
+         Brokerage:            QuantConnect.Brokerages.Backtesting.BacktestingBrokerage
+         Data Provider:        QuantConnect.Lean.Engine.DataFeeds.DefaultDataProvider
+
+2026-01-02T00:21:08.9167146Z TRACE:: Debug: Launching analysis for PairsTradingCsvData with LEAN Engine v2.5.0.0
+2026-01-02T00:21:08.9220750Z TRACE:: Event Name "Daily Sampling", scheduled to run.
+2026-01-02T00:21:08.9228741Z TRACE:: AlgorithmManager.Run(): Begin DataStream - Start: 11/30/2007 12:00:00 AM Stop: 5/1/2009 11:59:59 PM Time: 11/30/2007 12:00:00 AM Warmup: False
+2026-01-02T00:21:08.9510148Z TRACE:: WeightedWorkScheduler(): will use 20 workers and MaxWorkWeight is 400
+2026-01-02T00:21:08.9515087Z TRACE:: UniverseSelection.AddPendingInternalDataFeeds(): Adding internal benchmark data feed SPY,#0,SPY,Hour,TradeBar,Trade,Adjusted,OpenInterest,Internal
+2026-01-02T00:21:09.3902865Z TRACE:: Debug: 2007-11-30 00:00:00 === Pairs Trading Strategy: GLD vs GDX ===
+2026-01-02T00:21:09.3907853Z TRACE:: Debug: 2007-11-30 00:00:00 Training Period: 252 days
+2026-01-02T00:21:09.3912824Z TRACE:: Debug: 2007-11-30 00:00:00 Entry Z-Score: ±2.0
+2026-01-02T00:21:09.3917251Z TRACE:: Debug: 2007-11-30 00:00:00 Exit Z-Score: ±1.0
+
+2026-01-02T00:21:09.3921981Z TRACE:: Debug: 2007-11-30 00:00:00 GLD data points: 764
+2026-01-02T00:21:09.3926089Z TRACE:: Debug: 2007-11-30 00:00:00 GDX data points: 385
+2026-01-02T00:21:09.3929986Z TRACE:: Debug: 2007-11-30 00:00:00 Common dates: 385
+2026-01-02T00:21:09.3933971Z TRACE:: Debug: 2007-11-30 00:00:00 Loaded 385 days of data
+2026-01-02T00:21:09.3937889Z TRACE:: Debug: 2007-11-30 00:00:00 Date range: 2006-05-23 to 2007-11-30
+
+2026-01-02T00:21:09.3941317Z TRACE:: Debug: 2007-11-30 00:00:00 === CALIBRATION PHASE ===
+2026-01-02T00:21:09.3944652Z TRACE:: Debug: 2007-11-30 00:00:00 Hedge Ratio: 1.193108
+2026-01-02T00:21:09.3947750Z TRACE:: Debug: 2007-11-30 00:00:00 Intercept: 16.902415
+2026-01-02T00:21:09.3952050Z TRACE:: Debug: 2007-11-30 00:00:00 Spread Mean: 16.902415
+2026-01-02T00:21:09.3955858Z TRACE:: Debug: 2007-11-30 00:00:00 Spread Std Dev: 1.703809
+
+2026-01-02T00:21:09.3959779Z TRACE:: Debug: 2007-11-30 00:00:00 === TRADING PHASE ===
+
+2026-01-02T00:21:09.3963814Z TRACE:: Debug: 2007-11-30 00:00:00 2007-08-07 | ENTER SHORT SPREAD | Z-Score: 2.0821 | Portfolio: $100000.00
+2026-01-02T00:21:09.3967257Z TRACE:: Debug: 2007-11-30 00:00:00 2007-08-09 | EXIT SHORT SPREAD | Z-Score: 0.8742 | Portfolio: $101926.83
+2026-01-02T00:21:09.3972146Z TRACE:: Debug: 2007-11-30 00:00:00 2007-08-14 | ENTER SHORT SPREAD | Z-Score: 2.3417 | Portfolio: $101926.83
+2026-01-02T00:21:09.3976223Z TRACE:: Debug: 2007-11-30 00:00:00 2007-09-20 | EXIT SHORT SPREAD | Z-Score: 0.6746 | Portfolio: $107094.71
+2026-01-02T00:21:09.3980437Z TRACE:: Debug: 2007-11-30 00:00:00 2007-11-07 | ENTER SHORT SPREAD | Z-Score: 2.2636 | Portfolio: $107094.71
+2026-01-02T00:21:09.3985327Z TRACE:: Debug: 2007-11-30 00:00:00 
+=== FINAL RESULTS ===
+2026-01-02T00:21:09.3989213Z TRACE:: Debug: 2007-11-30 00:00:00 Initial Portfolio Value: $100,000
+2026-01-02T00:21:09.3993457Z TRACE:: Debug: 2007-11-30 00:00:00 Final Portfolio Value: $105007.10
+2026-01-02T00:21:09.3997370Z TRACE:: Debug: 2007-11-30 00:00:00 Total Return: 5.01%
+2026-01-02T00:21:09.4000660Z TRACE:: Debug: 2007-11-30 00:00:00 Trades Executed: 3
+
+2026-01-02T00:21:09.4003943Z TRACE:: Debug: 2007-11-30 00:00:00 Training Period Sharpe Ratio: 0.0000
+2026-01-02T00:21:09.4007910Z TRACE:: Debug: 2007-11-30 00:00:00 Training Period Days: 252
+2026-01-02T00:21:09.4012829Z TRACE:: Debug: 2007-11-30 00:00:00 Test Period Sharpe Ratio: 1.0177
+2026-01-02T00:21:09.4018305Z TRACE:: Debug: 2007-11-30 00:00:00 Test Period Days: 133
+2026-01-02T00:21:09.4023260Z TRACE:: Debug: 2007-11-30 00:00:00 Test Period Total P&L: $5007.10
+2026-01-02T00:21:09.4028636Z TRACE:: Debug: 2007-11-30 00:00:00 
+=== BACKTEST COMPLETE ===
+2026-01-02T00:21:09.4768995Z TRACE:: Synchronizer.GetEnumerator(): Exited thread.
+2026-01-02T00:21:09.4780647Z TRACE:: AlgorithmManager.Run(): Firing On End Of Algorithm...
+2026-01-02T00:21:09.4791629Z TRACE:: Engine.Run(): Exiting Algorithm Manager
+2026-01-02T00:21:09.4882959Z TRACE:: StopSafely(): Waiting for 'Isolator Thread' thread to stop...
+2026-01-02T00:21:09.4894878Z TRACE:: FileSystemDataFeed.Exit(): Start. Setting cancellation token...
+2026-01-02T00:21:09.4934243Z TRACE:: FileSystemDataFeed.Exit(): Exit Finished.
+2026-01-02T00:21:09.4944778Z TRACE:: BacktestingResultHandler.Exit(): starting...
+2026-01-02T00:21:09.4949862Z TRACE:: BacktestingResultHandler.Exit(): Saving logs...
+2026-01-02T00:21:09.4997950Z TRACE:: Debug: Algorithm Id:(PairsTradingCsvData) completed in 0.60 seconds at 4k data points per second. Processing total of 2,494 data points.
+2026-01-02T00:21:09.5002512Z TRACE:: Debug: Your log was successfully created and can be retrieved from: ./Results\PairsTradingCsvData-log.txt
+2026-01-02T00:21:09.5008260Z TRACE:: BacktestingResultHandler.Run(): Ending Thread...
+2026-01-02T00:21:09.5015324Z TRACE:: StopSafely(): Waiting for 'Result Thread' thread to stop...
+2026-01-02T00:21:09.7983691Z TRACE:: 
+STATISTICS:: Total Orders 0
+STATISTICS:: Average Win 0%
+STATISTICS:: Average Loss 0%
+STATISTICS:: Compounding Annual Return 0%
+STATISTICS:: Drawdown 0%
+STATISTICS:: Expectancy 0
+STATISTICS:: Start Equity 100000
+STATISTICS:: End Equity 100000
+STATISTICS:: Net Profit 0%
+STATISTICS:: Sharpe Ratio 0
+STATISTICS:: Sortino Ratio 0
+STATISTICS:: Probabilistic Sharpe Ratio 0%
+STATISTICS:: Loss Rate 0%
+STATISTICS:: Win Rate 0%
+STATISTICS:: Profit-Loss Ratio 0
+STATISTICS:: Alpha 0
+STATISTICS:: Beta 0
+STATISTICS:: Annual Standard Deviation 0
+STATISTICS:: Annual Variance 0
+STATISTICS:: Information Ratio 0.549
+STATISTICS:: Tracking Error 0.313
+STATISTICS:: Treynor Ratio 0
+STATISTICS:: Total Fees $0.00
+STATISTICS:: Estimated Strategy Capacity $0
+STATISTICS:: Lowest Capacity Asset 
+STATISTICS:: Portfolio Turnover 0%
+STATISTICS:: Drawdown Recovery 0
+STATISTICS:: OrderListHash d41d8cd98f00b204e9800998ecf8427e
+2026-01-02T00:21:09.7988867Z TRACE:: BacktestingResultHandler.SendAnalysisResult(): Processed final packet
+2026-01-02T00:21:09.7999362Z TRACE:: Engine.Run(): Disconnecting from brokerage...
+2026-01-02T00:21:09.8003871Z TRACE:: Engine.Run(): Disposing of setup handler...
+2026-01-02T00:21:09.8010647Z TRACE:: Engine.Main(): Analysis Completed and Results Posted.
+2026-01-02T00:21:09.8019614Z TRACE:: DataMonitor.Exit(): start...
+2026-01-02T00:21:09.8021751Z TRACE:: StopSafely(): Waiting for '' thread to stop...
+2026-01-02T00:21:09.8046385Z TRACE:: DataMonitor.GenerateReport():
+DATA USAGE:: Total data requests 2
+DATA USAGE:: Succeeded data requests 2
+DATA USAGE:: Failed data requests 0
+DATA USAGE:: Failed data requests percentage 0%
+DATA USAGE:: Total universe data requests 0
+DATA USAGE:: Succeeded universe data requests 0
+DATA USAGE:: Failed universe data requests 0
+DATA USAGE:: Failed universe data requests percentage 0%
+2026-01-02T00:21:09.8152174Z TRACE:: DataMonitor.Exit(): end
+2026-01-02T00:21:09.8167394Z TRACE:: Engine.Main(): Packet removed from queue: PairsTradingCsvData
+2026-01-02T00:21:09.8173066Z TRACE:: LeanEngineSystemHandlers.Dispose(): start...
+2026-01-02T00:21:09.8183938Z TRACE:: LeanEngineSystemHandlers.Dispose(): Disposed of system handlers.
+2026-01-02T00:21:09.8192481Z TRACE:: LeanEngineAlgorithmHandlers.Dispose(): start...
+2026-01-02T00:21:09.8202479Z TRACE:: LocalObjectStore.Dispose(): start...
+2026-01-02T00:21:09.8208298Z TRACE:: LocalObjectStore.Dispose(): end
+2026-01-02T00:21:09.8217953Z TRACE:: LeanEngineAlgorithmHandlers.Dispose(): Disposed of algorithm handlers.
+2026-01-02T00:21:16.5098962Z TRACE:: Engine.Main(): LEAN ALGORITHMIC TRADING ENGINE v2.5.0.0 Mode: RELEASE (64bit) Host: MATUR-DESKTOP
+2026-01-02T00:21:16.5222214Z TRACE:: Engine.Main(): Started 6:21 PM
+2026-01-02T00:21:16.5419182Z TRACE:: JobQueue.NextJob(): Selected c:/Users/matur/source/sandbox/Demo/bin/Release/net10.0/Demo.dll
+2026-01-02T00:21:16.5662042Z TRACE:: AlgorithmManager.CreateTokenBucket(): Initializing LeakyBucket: Capacity: 120 RefillAmount: 18 TimeInterval: 1440
+2026-01-02T00:21:16.5767646Z TRACE:: Engine.Run(): Resource limits '0' CPUs. 2147483647 MB RAM.
+2026-01-02T00:21:16.5785773Z TRACE:: TextSubscriptionDataSourceReader.SetCacheSize(): Setting cache size to 71582788 items
+2026-01-02T00:21:17.3785957Z TRACE:: Loader.TryCreateILAlgorithm(): Loading debug information with algorithm
+2026-01-02T00:21:17.6006079Z TRACE:: Loader.TryCreateILAlgorithm(): Loaded BuyAndHoldXOM
+2026-01-02T00:21:17.6086843Z TRACE:: LocalObjectStore.Initialize(): Storage Root: C:\Users\matur\source\sandbox\Demo\storage. StorageFileCount 10000. StorageLimit 10240MB. StoragePermissions Read=True Write=True Delete=True
+2026-01-02T00:21:17.6262491Z TRACE:: HistoryProviderManager.Initialize(): history providers [SubscriptionDataReaderHistoryProvider]
+2026-01-02T00:21:17.6295747Z TRACE:: BaseSetupHandler.Setup(LocalPlatform): UID: 0, PID: 0, Version: 2.5.0.0, Source: WebIDE
+2026-01-02T00:21:17.7793428Z TRACE:: WeightedWorkScheduler(): will use 20 workers and MaxWorkWeight is 400
+2026-01-02T00:21:17.8219133Z TRACE:: BaseSetupHandler.SetupCurrencyConversions():
+Account Type: Margin
+
+Symbol      Quantity    Conversion = Value in USD
+USD: $      100000.00 @       1.00 = $100000
+-------------------------------------------------
+CashBook Total Value:                $100000
+
+2026-01-02T00:21:17.8273115Z TRACE:: Total margin information: TotalMarginUsed: 0.00, MarginRemaining: 100000.00
+2026-01-02T00:21:17.8282078Z TRACE:: SetUp Backtesting: User: 0 ProjectId: 0 AlgoId: BuyAndHoldXOM
+2026-01-02T00:21:17.8345598Z TRACE:: Dates: Start: 10/07/2013 End: 10/11/2013 Cash: ¤100,000.00 MaximumRuntime: 100.00:00:00 MaxOrders: 2147483647
+2026-01-02T00:21:17.8448216Z TRACE:: BacktestingResultHandler(): Sample Period Set: 04.00
+2026-01-02T00:21:17.8473262Z TRACE:: JOB HANDLERS:
+         DataFeed:             QuantConnect.Lean.Engine.DataFeeds.FileSystemDataFeed
+         Setup:                QuantConnect.Lean.Engine.Setup.ConsoleSetupHandler
+         RealTime:             QuantConnect.Lean.Engine.RealTime.BacktestingRealTimeHandler
+         Results:              QuantConnect.Lean.Engine.Results.BacktestingResultHandler
+         Transactions:         QuantConnect.Lean.Engine.TransactionHandlers.BacktestingTransactionHandler
+         Object Store:         QuantConnect.Lean.Engine.Storage.LocalObjectStore
+         History Provider:     QuantConnect.Lean.Engine.HistoricalData.HistoryProviderManager
+         Brokerage:            QuantConnect.Brokerages.Backtesting.BacktestingBrokerage
+         Data Provider:        QuantConnect.Lean.Engine.DataFeeds.DefaultDataProvider
+
+2026-01-02T00:21:17.8657235Z TRACE:: Event Name "Daily Sampling", scheduled to run.
+2026-01-02T00:21:17.8669025Z TRACE:: AlgorithmManager.Run(): Begin DataStream - Start: 10/7/2013 12:00:00 AM Stop: 10/11/2013 11:59:59 PM Time: 10/7/2013 12:00:00 AM Warmup: False
+2026-01-02T00:21:17.9090082Z TRACE:: Debug: Launching analysis for BuyAndHoldXOM with LEAN Engine v2.5.0.0
+2026-01-02T00:21:18.0376616Z TRACE:: UniverseSelection.AddPendingInternalDataFeeds(): Adding internal benchmark data feed SPY,#0,SPY,Hour,TradeBar,Trade,Adjusted,OpenInterest,Internal
+2026-01-02T00:21:18.3197707Z TRACE:: Debug: 2013-10-07 00:00:00 Algorithm initialized: Buy and Hold Demo
+2026-01-02T00:21:18.3202458Z TRACE:: Debug: 2013-10-07 16:00:00 Purchased SPY at $144.76 on 10/7/2013 4:00:00 PM
+2026-01-02T00:21:18.3415022Z TRACE:: Synchronizer.GetEnumerator(): Exited thread.
+2026-01-02T00:21:18.3422917Z TRACE:: AlgorithmManager.Run(): Firing On End Of Algorithm...
+2026-01-02T00:21:18.3434340Z TRACE:: Engine.Run(): Exiting Algorithm Manager
+2026-01-02T00:21:18.3519981Z TRACE:: StopSafely(): Waiting for 'Isolator Thread' thread to stop...
+2026-01-02T00:21:18.3530756Z TRACE:: FileSystemDataFeed.Exit(): Start. Setting cancellation token...
+2026-01-02T00:21:18.3576553Z TRACE:: FileSystemDataFeed.Exit(): Exit Finished.
+2026-01-02T00:21:18.3586388Z TRACE:: BacktestingResultHandler.Exit(): starting...
+2026-01-02T00:21:18.3594361Z TRACE:: BacktestingResultHandler.Exit(): Saving logs...
+2026-01-02T00:21:18.3641304Z TRACE:: Debug: 2013-10-11 16:00:00 Final Portfolio Value: $101,694.38
+2026-01-02T00:21:18.3644778Z TRACE:: Debug: 2013-10-11 16:00:00 SPY Shares: 689
+2026-01-02T00:21:18.3649259Z TRACE:: Debug: 2013-10-11 16:00:00 SPY Market Value: $101,452.43
+2026-01-02T00:21:18.3651160Z TRACE:: StopSafely(): Waiting for 'Result Thread' thread to stop...
+2026-01-02T00:21:18.3656960Z TRACE:: Debug: Algorithm Id:(BuyAndHoldXOM) completed in 0.49 seconds at 0k data points per second. Processing total of 48 data points.
+2026-01-02T00:21:18.3661459Z TRACE:: Debug: Your log was successfully created and can be retrieved from: ./Results\BuyAndHoldXOM-log.txt
+2026-01-02T00:21:18.3665607Z TRACE:: BacktestingResultHandler.Run(): Ending Thread...
+2026-01-02T00:21:18.5279784Z TRACE:: 
+STATISTICS:: Total Orders 1
+STATISTICS:: Average Win 0%
+STATISTICS:: Average Loss 0%
+STATISTICS:: Compounding Annual Return 272.157%
+STATISTICS:: Drawdown 1.200%
+STATISTICS:: Expectancy 0
+STATISTICS:: Start Equity 100000
+STATISTICS:: End Equity 101694.38
+STATISTICS:: Net Profit 1.694%
+STATISTICS:: Sharpe Ratio 8.637
+STATISTICS:: Sortino Ratio 0
+STATISTICS:: Probabilistic Sharpe Ratio 67.159%
+STATISTICS:: Loss Rate 0%
+STATISTICS:: Win Rate 0%
+STATISTICS:: Profit-Loss Ratio 0
+STATISTICS:: Alpha -0.053
+STATISTICS:: Beta 1.003
+STATISTICS:: Annual Standard Deviation 0.223
+STATISTICS:: Annual Variance 0.05
+STATISTICS:: Information Ratio -35.82
+STATISTICS:: Tracking Error 0.001
+STATISTICS:: Treynor Ratio 1.922
+STATISTICS:: Total Fees $3.45
+STATISTICS:: Estimated Strategy Capacity $1300000000.00
+STATISTICS:: Lowest Capacity Asset SPY R735QTJ8XC9X
+STATISTICS:: Portfolio Turnover 20.19%
+STATISTICS:: Drawdown Recovery 2
+STATISTICS:: OrderListHash ec0cf7d19c005d7d23452f96761ad014
+2026-01-02T00:21:18.5284041Z TRACE:: BacktestingResultHandler.SendAnalysisResult(): Processed final packet
+2026-01-02T00:21:18.5296236Z TRACE:: Engine.Run(): Disconnecting from brokerage...
+2026-01-02T00:21:18.5304093Z TRACE:: Engine.Run(): Disposing of setup handler...
+2026-01-02T00:21:18.5309094Z TRACE:: Engine.Main(): Analysis Completed and Results Posted.
+2026-01-02T00:21:18.5317475Z TRACE:: DataMonitor.Exit(): start...
+2026-01-02T00:21:18.5322214Z TRACE:: StopSafely(): Waiting for '' thread to stop...
+2026-01-02T00:21:18.5382858Z TRACE:: DataMonitor.GenerateReport():
+DATA USAGE:: Total data requests 3
+DATA USAGE:: Succeeded data requests 3
+DATA USAGE:: Failed data requests 0
+DATA USAGE:: Failed data requests percentage 0%
+DATA USAGE:: Total universe data requests 0
+DATA USAGE:: Succeeded universe data requests 0
+DATA USAGE:: Failed universe data requests 0
+DATA USAGE:: Failed universe data requests percentage 0%
+2026-01-02T00:21:18.5485094Z TRACE:: DataMonitor.Exit(): end
+2026-01-02T00:21:18.5503324Z TRACE:: Engine.Main(): Packet removed from queue: BuyAndHoldXOM
+2026-01-02T00:21:18.5509608Z TRACE:: LeanEngineSystemHandlers.Dispose(): start...
+2026-01-02T00:21:18.5530894Z TRACE:: LeanEngineSystemHandlers.Dispose(): Disposed of system handlers.
+2026-01-02T00:21:18.5536072Z TRACE:: LeanEngineAlgorithmHandlers.Dispose(): start...
+2026-01-02T00:21:18.5543226Z TRACE:: LocalObjectStore.Dispose(): start...
+2026-01-02T00:21:18.5566262Z TRACE:: LocalObjectStore.Dispose(): end
+2026-01-02T00:21:18.5576218Z TRACE:: LeanEngineAlgorithmHandlers.Dispose(): Disposed of algorithm handlers.
+2026-01-02T00:22:14.3507522Z TRACE:: Engine.Main(): LEAN ALGORITHMIC TRADING ENGINE v2.5.0.0 Mode: RELEASE (64bit) Host: MATUR-DESKTOP
+2026-01-02T00:22:14.3626292Z TRACE:: Engine.Main(): Started 6:22 PM
+2026-01-02T00:22:14.3819671Z TRACE:: JobQueue.NextJob(): Selected c:/Users/matur/source/sandbox/Demo/bin/Release/net10.0/Demo.dll
+2026-01-02T00:22:14.4050994Z TRACE:: AlgorithmManager.CreateTokenBucket(): Initializing LeakyBucket: Capacity: 120 RefillAmount: 18 TimeInterval: 1440
+2026-01-02T00:22:14.4143342Z TRACE:: Engine.Run(): Resource limits '0' CPUs. 2147483647 MB RAM.
+2026-01-02T00:22:14.4161944Z TRACE:: TextSubscriptionDataSourceReader.SetCacheSize(): Setting cache size to 71582788 items
+2026-01-02T00:22:15.2021806Z TRACE:: Loader.TryCreateILAlgorithm(): Loading debug information with algorithm
+2026-01-02T00:22:15.4732596Z TRACE:: Loader.TryCreateILAlgorithm(): Loaded PairsTradingCsvData
+2026-01-02T00:22:15.4841090Z TRACE:: LocalObjectStore.Initialize(): Storage Root: C:\Users\matur\source\sandbox\Demo\storage. StorageFileCount 10000. StorageLimit 10240MB. StoragePermissions Read=True Write=True Delete=True
+2026-01-02T00:22:15.5146217Z TRACE:: HistoryProviderManager.Initialize(): history providers [SubscriptionDataReaderHistoryProvider]
+2026-01-02T00:22:15.5224459Z TRACE:: BaseSetupHandler.Setup(LocalPlatform): UID: 0, PID: 0, Version: 2.5.0.0, Source: WebIDE
+2026-01-02T00:22:15.7122876Z TRACE:: BaseSetupHandler.SetupCurrencyConversions():
+Account Type: Margin
+
+Symbol      Quantity    Conversion = Value in USD
+USD: $      100000.00 @       1.00 = $100000
+-------------------------------------------------
+CashBook Total Value:                $100000
+
+2026-01-02T00:22:15.7153421Z TRACE:: Total margin information: TotalMarginUsed: 0.00, MarginRemaining: 100000.00
+2026-01-02T00:22:15.7157739Z TRACE:: SetUp Backtesting: User: 0 ProjectId: 0 AlgoId: PairsTradingCsvData
+2026-01-02T00:22:15.7193674Z TRACE:: Dates: Start: 11/30/2007 End: 05/01/2009 Cash: ¤100,000.00 MaximumRuntime: 100.00:00:00 MaxOrders: 2147483647
+2026-01-02T00:22:15.7267007Z TRACE:: BacktestingResultHandler(): Sample Period Set: 186.84
+2026-01-02T00:22:15.7281665Z TRACE:: JOB HANDLERS:
+         DataFeed:             QuantConnect.Lean.Engine.DataFeeds.FileSystemDataFeed
+         Setup:                QuantConnect.Lean.Engine.Setup.ConsoleSetupHandler
+         RealTime:             QuantConnect.Lean.Engine.RealTime.BacktestingRealTimeHandler
+         Results:              QuantConnect.Lean.Engine.Results.BacktestingResultHandler
+         Transactions:         QuantConnect.Lean.Engine.TransactionHandlers.BacktestingTransactionHandler
+         Object Store:         QuantConnect.Lean.Engine.Storage.LocalObjectStore
+         History Provider:     QuantConnect.Lean.Engine.HistoricalData.HistoryProviderManager
+         Brokerage:            QuantConnect.Brokerages.Backtesting.BacktestingBrokerage
+         Data Provider:        QuantConnect.Lean.Engine.DataFeeds.DefaultDataProvider
+
+2026-01-02T00:22:15.7498398Z TRACE:: Event Name "Daily Sampling", scheduled to run.
+2026-01-02T00:22:15.7508847Z TRACE:: AlgorithmManager.Run(): Begin DataStream - Start: 11/30/2007 12:00:00 AM Stop: 5/1/2009 11:59:59 PM Time: 11/30/2007 12:00:00 AM Warmup: False
+2026-01-02T00:22:15.7577142Z TRACE:: Debug: Launching analysis for PairsTradingCsvData with LEAN Engine v2.5.0.0
+2026-01-02T00:22:15.7822742Z TRACE:: WeightedWorkScheduler(): will use 20 workers and MaxWorkWeight is 400
+2026-01-02T00:22:15.7826094Z TRACE:: UniverseSelection.AddPendingInternalDataFeeds(): Adding internal benchmark data feed SPY,#0,SPY,Hour,TradeBar,Trade,Adjusted,OpenInterest,Internal
+2026-01-02T00:22:16.0765917Z TRACE:: Debug: 2007-11-30 00:00:00 === Pairs Trading Strategy: GLD vs GDX ===
+2026-01-02T00:22:16.0771860Z TRACE:: Debug: 2007-11-30 00:00:00 Training Period: 252 days
+2026-01-02T00:22:16.0774571Z TRACE:: Debug: 2007-11-30 00:00:00 Entry Z-Score: ±2.0
+2026-01-02T00:22:16.0777676Z TRACE:: Debug: 2007-11-30 00:00:00 Exit Z-Score: ±1.0
+
+2026-01-02T00:22:16.0781366Z TRACE:: Debug: 2007-11-30 00:00:00 GLD data points: 764
+2026-01-02T00:22:16.0784244Z TRACE:: Debug: 2007-11-30 00:00:00 GDX data points: 385
+2026-01-02T00:22:16.0786767Z TRACE:: Debug: 2007-11-30 00:00:00 Common dates: 385
+2026-01-02T00:22:16.0788717Z TRACE:: Debug: 2007-11-30 00:00:00 Loaded 385 days of data
+2026-01-02T00:22:16.0791655Z TRACE:: Debug: 2007-11-30 00:00:00 Date range: 2006-05-23 to 2007-11-30
+
+2026-01-02T00:22:16.0795700Z TRACE:: Debug: 2007-11-30 00:00:00 === CALIBRATION PHASE ===
+2026-01-02T00:22:16.0799257Z TRACE:: Debug: 2007-11-30 00:00:00 Hedge Ratio: 1.193108
+2026-01-02T00:22:16.0803783Z TRACE:: Debug: 2007-11-30 00:00:00 Intercept: 16.902415
+2026-01-02T00:22:16.0809411Z TRACE:: Debug: 2007-11-30 00:00:00 Spread Mean: 16.902415
+2026-01-02T00:22:16.0812760Z TRACE:: Debug: 2007-11-30 00:00:00 Spread Std Dev: 1.703809
+
+2026-01-02T00:22:16.0824798Z TRACE:: Debug: 2007-11-30 00:00:00 === TRADING PHASE ===
+
+2026-01-02T00:22:16.0830475Z TRACE:: Debug: 2007-11-30 00:00:00 2007-08-07 | ENTER SHORT SPREAD | Z-Score: 2.0821 | Portfolio: $100000.00
+2026-01-02T00:22:16.0835294Z TRACE:: Debug: 2007-11-30 00:00:00 2007-08-09 | EXIT SHORT SPREAD | Z-Score: 0.8742 | Portfolio: $101926.83
+2026-01-02T00:22:16.0839859Z TRACE:: Debug: 2007-11-30 00:00:00 2007-08-14 | ENTER SHORT SPREAD | Z-Score: 2.3417 | Portfolio: $101926.83
+2026-01-02T00:22:16.0843766Z TRACE:: Debug: 2007-11-30 00:00:00 2007-09-20 | EXIT SHORT SPREAD | Z-Score: 0.6746 | Portfolio: $107094.71
+2026-01-02T00:22:16.0847380Z TRACE:: Debug: 2007-11-30 00:00:00 2007-11-07 | ENTER SHORT SPREAD | Z-Score: 2.2636 | Portfolio: $107094.71
+2026-01-02T00:22:16.0851605Z TRACE:: Debug: 2007-11-30 00:00:00 
+=== FINAL RESULTS ===
+2026-01-02T00:22:16.0856246Z TRACE:: Debug: 2007-11-30 00:00:00 Initial Portfolio Value: $100,000
+2026-01-02T00:22:16.0860452Z TRACE:: Debug: 2007-11-30 00:00:00 Final Portfolio Value: $105007.10
+2026-01-02T00:22:16.0864105Z TRACE:: Debug: 2007-11-30 00:00:00 Total Return: 5.01%
+2026-01-02T00:22:16.0868193Z TRACE:: Debug: 2007-11-30 00:00:00 Trades Executed: 3
+
+2026-01-02T00:22:16.0871449Z TRACE:: Debug: 2007-11-30 00:00:00 Training Period Sharpe Ratio: 0.0000
+2026-01-02T00:22:16.0875426Z TRACE:: Debug: 2007-11-30 00:00:00 Training Period Days: 252
+2026-01-02T00:22:16.0879148Z TRACE:: Debug: 2007-11-30 00:00:00 Test Period Sharpe Ratio: 1.0177
+2026-01-02T00:22:16.0882579Z TRACE:: Debug: 2007-11-30 00:00:00 Test Period Days: 133
+2026-01-02T00:22:16.0885594Z TRACE:: Debug: 2007-11-30 00:00:00 Test Period Total P&L: $5007.10
+2026-01-02T00:22:16.0889092Z TRACE:: Debug: 2007-11-30 00:00:00 
+=== BACKTEST COMPLETE ===
+2026-01-02T00:22:16.2102171Z TRACE:: Synchronizer.GetEnumerator(): Exited thread.
+2026-01-02T00:22:16.2111371Z TRACE:: AlgorithmManager.Run(): Firing On End Of Algorithm...
+2026-01-02T00:22:16.2120274Z TRACE:: Engine.Run(): Exiting Algorithm Manager
+2026-01-02T00:22:16.2226917Z TRACE:: StopSafely(): Waiting for 'Isolator Thread' thread to stop...
+2026-01-02T00:22:16.2237739Z TRACE:: FileSystemDataFeed.Exit(): Start. Setting cancellation token...
+2026-01-02T00:22:16.2277971Z TRACE:: FileSystemDataFeed.Exit(): Exit Finished.
+2026-01-02T00:22:16.2288506Z TRACE:: BacktestingResultHandler.Exit(): starting...
+2026-01-02T00:22:16.2294439Z TRACE:: BacktestingResultHandler.Exit(): Saving logs...
+2026-01-02T00:22:16.2341374Z TRACE:: Debug: Algorithm Id:(PairsTradingCsvData) completed in 0.48 seconds at 5k data points per second. Processing total of 2,494 data points.
+2026-01-02T00:22:16.2345068Z TRACE:: Debug: Your log was successfully created and can be retrieved from: ./Results\PairsTradingCsvData-log.txt
+2026-01-02T00:22:16.2349313Z TRACE:: BacktestingResultHandler.Run(): Ending Thread...
+2026-01-02T00:22:16.2353351Z TRACE:: StopSafely(): Waiting for 'Result Thread' thread to stop...
+2026-01-02T00:22:16.5215806Z TRACE:: 
+STATISTICS:: Total Orders 0
+STATISTICS:: Average Win 0%
+STATISTICS:: Average Loss 0%
+STATISTICS:: Compounding Annual Return 0%
+STATISTICS:: Drawdown 0%
+STATISTICS:: Expectancy 0
+STATISTICS:: Start Equity 100000
+STATISTICS:: End Equity 100000
+STATISTICS:: Net Profit 0%
+STATISTICS:: Sharpe Ratio 0
+STATISTICS:: Sortino Ratio 0
+STATISTICS:: Probabilistic Sharpe Ratio 0%
+STATISTICS:: Loss Rate 0%
+STATISTICS:: Win Rate 0%
+STATISTICS:: Profit-Loss Ratio 0
+STATISTICS:: Alpha 0
+STATISTICS:: Beta 0
+STATISTICS:: Annual Standard Deviation 0
+STATISTICS:: Annual Variance 0
+STATISTICS:: Information Ratio 0.549
+STATISTICS:: Tracking Error 0.313
+STATISTICS:: Treynor Ratio 0
+STATISTICS:: Total Fees $0.00
+STATISTICS:: Estimated Strategy Capacity $0
+STATISTICS:: Lowest Capacity Asset 
+STATISTICS:: Portfolio Turnover 0%
+STATISTICS:: Drawdown Recovery 0
+STATISTICS:: OrderListHash d41d8cd98f00b204e9800998ecf8427e
+2026-01-02T00:22:16.5218091Z TRACE:: BacktestingResultHandler.SendAnalysisResult(): Processed final packet
+2026-01-02T00:22:16.5231638Z TRACE:: Engine.Run(): Disconnecting from brokerage...
+2026-01-02T00:22:16.5235400Z TRACE:: Engine.Run(): Disposing of setup handler...
+2026-01-02T00:22:16.5239885Z TRACE:: Engine.Main(): Analysis Completed and Results Posted.
+2026-01-02T00:22:16.5246048Z TRACE:: DataMonitor.Exit(): start...
+2026-01-02T00:22:16.5249629Z TRACE:: StopSafely(): Waiting for '' thread to stop...
+2026-01-02T00:22:16.5270987Z TRACE:: DataMonitor.GenerateReport():
+DATA USAGE:: Total data requests 2
+DATA USAGE:: Succeeded data requests 2
+DATA USAGE:: Failed data requests 0
+DATA USAGE:: Failed data requests percentage 0%
+DATA USAGE:: Total universe data requests 0
+DATA USAGE:: Succeeded universe data requests 0
+DATA USAGE:: Failed universe data requests 0
+DATA USAGE:: Failed universe data requests percentage 0%
+2026-01-02T00:22:16.5346519Z TRACE:: DataMonitor.Exit(): end
+2026-01-02T00:22:16.5361911Z TRACE:: Engine.Main(): Packet removed from queue: PairsTradingCsvData
+2026-01-02T00:22:16.5366999Z TRACE:: LeanEngineSystemHandlers.Dispose(): start...
+2026-01-02T00:22:16.5387987Z TRACE:: LeanEngineSystemHandlers.Dispose(): Disposed of system handlers.
+2026-01-02T00:22:16.5393744Z TRACE:: LeanEngineAlgorithmHandlers.Dispose(): start...
+2026-01-02T00:22:16.5397033Z TRACE:: LocalObjectStore.Dispose(): start...
+2026-01-02T00:22:16.5403924Z TRACE:: LocalObjectStore.Dispose(): end
+2026-01-02T00:22:16.5407570Z TRACE:: LeanEngineAlgorithmHandlers.Dispose(): Disposed of algorithm handlers.
