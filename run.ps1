@@ -22,7 +22,7 @@
 
 param(
     [Parameter(Mandatory=$true, Position=0)]
-    [string]$AlgorithmName,
+    [string]$StrategyName,
     
     [Parameter(Mandatory=$false)]
     [switch]$NoBuild
@@ -40,8 +40,8 @@ Write-Host "================================================" -ForegroundColor C
 Write-Host "  QuantConnect LEAN Backtest Runner" -ForegroundColor Cyan
 Write-Host "================================================" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "Algorithm: " -NoNewline
-Write-Host $AlgorithmName -ForegroundColor Yellow
+Write-Host "Strategy: " -NoNewline
+Write-Host $StrategyName -ForegroundColor Yellow
 Write-Host ""
 
 # Step 1: Build the project (unless -NoBuild is specified)
@@ -68,16 +68,28 @@ if (-not $NoBuild) {
     Write-Host "[1/3] Skipping build (using existing DLL)" -ForegroundColor Yellow
 }
 
-# Step 2: Update config.json with the algorithm name
-Write-Host "[2/3] Updating configuration..." -ForegroundColor Green
+# Step 2: Create timestamped results folder and update config
+Write-Host "[2/3] Creating results folder and updating configuration..." -ForegroundColor Green
 
+# Create timestamped folder name
+$timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+$resultsFolderName = "$StrategyName-$timestamp"
+$resultsPath = Join-Path $scriptDir "Results" $resultsFolderName
+
+# Create the directory
+New-Item -ItemType Directory -Path $resultsPath -Force | Out-Null
+Write-Host "      [OK] Created results folder: $resultsFolderName" -ForegroundColor DarkGreen
+
+# Update config with algorithm name and results path
 $config = Get-Content $configPath -Raw | ConvertFrom-Json
-$originalAlgorithm = $config.'algorithm-type-name'
-$config.'algorithm-type-name' = $AlgorithmName
+$originalStrategy = $config.'algorithm-type-name'
+$originalResultsPath = $config.'results-destination-folder'
+$config.'algorithm-type-name' = $StrategyName
+$config.'results-destination-folder' = $resultsPath
 
 $config | ConvertTo-Json -Depth 10 | Set-Content $configPath
 
-Write-Host "      [OK] Config updated: $originalAlgorithm → $AlgorithmName" -ForegroundColor DarkGreen
+Write-Host "      [OK] Config updated: $originalStrategy → $StrategyName" -ForegroundColor DarkGreen
 
 # Step 3: Run the backtest
 Write-Host "[3/3] Running backtest..." -ForegroundColor Green
@@ -89,9 +101,10 @@ try {
     $exitCode = $LASTEXITCODE
 }
 finally {
-    # Restore original config (optional - comment out if you want to keep the change)
-    # $config.'algorithm-type-name' = $originalAlgorithm
-    # $config | ConvertTo-Json -Depth 10 | Set-Content $configPath
+    # Restore original config
+    $config.'algorithm-type-name' = $originalStrategy
+    $config.'results-destination-folder' = $originalResultsPath
+    $config | ConvertTo-Json -Depth 10 | Set-Content $configPath
 }
 
 Write-Host "================================================" -ForegroundColor DarkGray
@@ -104,7 +117,8 @@ if ($exitCode -eq 0) {
 }
 
 Write-Host ""
-Write-Host "Results location: .\Lean\Launcher\bin\Release\Results" -ForegroundColor Cyan
+Write-Host "Results location: " -NoNewline
+Write-Host $resultsPath -ForegroundColor Cyan
 Write-Host ""
 
 exit $exitCode

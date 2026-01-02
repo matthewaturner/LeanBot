@@ -1,0 +1,364 @@
+"""
+Simple backtest visualization script for Lean results
+Generates an HTML report with equity curve, drawdown, and key statistics
+"""
+
+import json
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from datetime import datetime
+from base64 import b64encode
+import io
+
+def load_results(json_file):
+    """Load backtest results from JSON file"""
+    with open(json_file, 'r') as f:
+        return json.load(f)
+
+def extract_equity_series(data):
+    """Extract equity time series from charts data"""
+    equity_data = data['charts']['Strategy Equity']['series']['Equity']['values']
+    
+    # Extract timestamps and equity values (using close price)
+    df = pd.DataFrame(equity_data, columns=['timestamp', 'open', 'high', 'low', 'close'])
+    df['date'] = pd.to_datetime(df['timestamp'], unit='s')
+    df = df[['date', 'close']]
+    df.columns = ['date', 'equity']
+    df.set_index('date', inplace=True)
+    
+    return df
+
+def extract_drawdown_series(data):
+    """Extract drawdown time series from charts data"""
+    drawdown_data = data['charts']['Drawdown']['series']['Equity Drawdown']['values']
+    
+    df = pd.DataFrame(drawdown_data, columns=['timestamp', 'drawdown'])
+    df['date'] = pd.to_datetime(df['timestamp'], unit='s')
+    df.set_index('date', inplace=True)
+    
+    return df
+
+def fig_to_base64(fig):
+    """Convert matplotlib figure to base64 string"""
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+    buf.seek(0)
+    img_str = b64encode(buf.read()).decode('utf-8')
+    buf.close()
+    return f'data:image/png;base64,{img_str}'
+
+def create_equity_chart(equity_df):
+    """Create equity curve chart"""
+    fig, ax = plt.subplots(figsize=(12, 6))
+    
+    ax.plot(equity_df.index, equity_df['equity'], color='#ff9914', linewidth=2, label='Portfolio Value')
+    ax.fill_between(equity_df.index, equity_df['equity'], alpha=0.3, color='#ff9914')
+    
+    ax.set_title('Equity Curve', fontsize=16, fontweight='bold', pad=20)
+    ax.set_xlabel('Date', fontsize=12)
+    ax.set_ylabel('Portfolio Value ($)', fontsize=12)
+    ax.grid(True, alpha=0.3, linestyle='--')
+    ax.legend(loc='upper left')
+    
+    # Format y-axis as currency
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'${x:,.0f}'))
+    
+    # Format x-axis dates
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    plt.xticks(rotation=45)
+    
+    plt.tight_layout()
+    return fig
+
+def create_drawdown_chart(drawdown_df):
+    """Create drawdown chart"""
+    fig, ax = plt.subplots(figsize=(12, 4))
+    
+    ax.fill_between(drawdown_df.index, drawdown_df['drawdown'], 0, 
+                     color='#e74c3c', alpha=0.6, label='Drawdown')
+    ax.plot(drawdown_df.index, drawdown_df['drawdown'], color='#c0392b', linewidth=1.5)
+    
+    ax.set_title('Drawdown', fontsize=16, fontweight='bold', pad=20)
+    ax.set_xlabel('Date', fontsize=12)
+    ax.set_ylabel('Drawdown (%)', fontsize=12)
+    ax.grid(True, alpha=0.3, linestyle='--')
+    ax.legend(loc='lower left')
+    
+    # Format x-axis dates
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    plt.xticks(rotation=45)
+    
+    plt.tight_layout()
+    return fig
+
+def format_stat_value(key, value):
+    """Format statistics values for display"""
+    # Percentage metrics
+    if any(x in key.lower() for x in ['rate', 'return', 'ratio', 'drawdown', 'variance', 'turnover', 'deviation']):
+        try:
+            return f"{float(value):.2%}" if value else "0.00%"
+        except:
+            return value
+    
+    # Currency values
+    if any(x in key.lower() for x in ['equity', 'fees', 'capacity']):
+        try:
+            return f"${float(value):,.2f}"
+        except:
+            return value
+    
+    # Regular numbers
+    try:
+        num = float(value)
+        if abs(num) < 100:
+            return f"{num:.4f}"
+        else:
+            return f"{num:,.2f}"
+    except:
+        return value
+
+def generate_html_report(data, equity_chart_b64, drawdown_chart_b64, output_file):
+    """Generate HTML report with charts and statistics"""
+    stats = data['statistics']
+    algo_config = data['algorithmConfiguration']
+    
+    # Organize stats into categories
+    performance_stats = {}
+    risk_stats = {}
+    trade_stats = {}
+    
+    for key, value in stats.items():
+        key_lower = key.lower()
+        if any(x in key_lower for x in ['return', 'profit', 'alpha', 'beta', 'information']):
+            performance_stats[key] = format_stat_value(key, value)
+        elif any(x in key_lower for x in ['sharpe', 'sortino', 'drawdown', 'variance', 'deviation', 'risk']):
+            risk_stats[key] = format_stat_value(key, value)
+        else:
+            trade_stats[key] = format_stat_value(key, value)
+    
+    html_content = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backtest Report - {algo_config.get('name', 'Strategy')}</title>
+    <style>
+        body {{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }}
+        .container {{
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }}
+        h1 {{
+            color: #2c3e50;
+            border-bottom: 3px solid #ff9914;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }}
+        h2 {{
+            color: #34495e;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ff9914;
+            padding-left: 15px;
+        }}
+        .info-box {{
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }}
+        .info-box p {{
+            margin: 5px 0;
+            color: #555;
+        }}
+        .chart-container {{
+            margin: 30px 0;
+            text-align: center;
+        }}
+        .chart-container img {{
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }}
+        .stats-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }}
+        .stat-card {{
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #ff9914;
+        }}
+        .stat-card h3 {{
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }}
+        .stat-item {{
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }}
+        .stat-item:last-child {{
+            border-bottom: none;
+        }}
+        .stat-label {{
+            color: #555;
+            font-weight: 500;
+        }}
+        .stat-value {{
+            color: #2c3e50;
+            font-weight: 600;
+        }}
+        .highlight {{
+            font-size: 24px;
+            color: #27ae60;
+        }}
+        .highlight.negative {{
+            color: #e74c3c;
+        }}
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }}
+        th, td {{
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }}
+        th {{
+            background-color: #34495e;
+            color: white;
+            font-weight: 600;
+        }}
+        tr:hover {{
+            background-color: #f5f5f5;
+        }}
+        .footer {{
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Backtest Report</h1>
+        
+        <div class="info-box">
+            <p><strong>Strategy:</strong> {algo_config.get('name', 'N/A')}</p>
+            <p><strong>Period:</strong> {algo_config.get('startDate', 'N/A')[:10]} to {algo_config.get('endDate', 'N/A')[:10]}</p>
+            <p><strong>Status:</strong> {data.get('state', {}).get('Status', 'N/A')}</p>
+        </div>
+        
+        <h2>📈 Equity Curve</h2>
+        <div class="chart-container">
+            <img src="{equity_chart_b64}" alt="Equity Curve">
+        </div>
+        
+        <h2>📉 Drawdown</h2>
+        <div class="chart-container">
+            <img src="{drawdown_chart_b64}" alt="Drawdown">
+        </div>
+        
+        <h2>📊 Key Performance Metrics</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Performance Statistics</h3>
+                {''.join([f'<div class="stat-item"><span class="stat-label">{k}</span><span class="stat-value">{v}</span></div>' for k, v in performance_stats.items()])}
+            </div>
+            
+            <div class="stat-card">
+                <h3>Risk Statistics</h3>
+                {''.join([f'<div class="stat-item"><span class="stat-label">{k}</span><span class="stat-value">{v}</span></div>' for k, v in risk_stats.items()])}
+            </div>
+            
+            <div class="stat-card">
+                <h3>Trade Statistics</h3>
+                {''.join([f'<div class="stat-item"><span class="stat-label">{k}</span><span class="stat-value">{v}</span></div>' for k, v in trade_stats.items()])}
+            </div>
+        </div>
+        
+        <h2>📋 All Statistics</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {''.join([f'<tr><td>{k}</td><td>{v}</td></tr>' for k, v in stats.items()])}
+            </tbody>
+        </table>
+        
+        <div class="footer">
+            <p>Generated with Lean Algorithmic Trading Engine | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+        </div>
+    </div>
+</body>
+</html>
+"""
+    
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+    
+    print(f"Report generated successfully: {output_file}")
+
+def main():
+    # Configuration
+    json_file = "Results/BuyAndHoldXOM.json"
+    output_file = "Results/report.html"
+    
+    print("Loading backtest results...")
+    data = load_results(json_file)
+    
+    print("Extracting equity curve...")
+    equity_df = extract_equity_series(data)
+    
+    print("Extracting drawdown data...")
+    drawdown_df = extract_drawdown_series(data)
+    
+    print("Generating charts...")
+    equity_fig = create_equity_chart(equity_df)
+    equity_chart_b64 = fig_to_base64(equity_fig)
+    plt.close(equity_fig)
+    
+    drawdown_fig = create_drawdown_chart(drawdown_df)
+    drawdown_chart_b64 = fig_to_base64(drawdown_fig)
+    plt.close(drawdown_fig)
+    
+    print("Generating HTML report...")
+    generate_html_report(data, equity_chart_b64, drawdown_chart_b64, output_file)
+    
+    print("\nReport Summary:")
+    print(f"  Start Equity: ${float(data['statistics']['Start Equity']):,.2f}")
+    print(f"  End Equity: ${float(data['statistics']['End Equity']):,.2f}")
+    print(f"  Net Profit: {data['statistics']['Net Profit']}")
+    print(f"  Sharpe Ratio: {data['statistics']['Sharpe Ratio']}")
+    print(f"  Max Drawdown: {data['statistics']['Drawdown']}")
+    print(f"\n✅ Open {output_file} in your browser to view the full report!")
+
+if __name__ == "__main__":
+    main()

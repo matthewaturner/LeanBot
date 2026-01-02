@@ -1,6 +1,6 @@
 {
     "environment":  "backtesting",
-    "algorithm-type-name":  "PairsTradingCsvData",
+    "algorithm-type-name":  "BuyAndHoldXOM",
     "algorithm-language":  "CSharp",
     "algorithm-location":  "c:/Users/matur/source/sandbox/Demo/bin/Release/net10.0/Demo.dll",
     "data-folder":  "c:/Users/matur/source/sandbox/Lean/Data/",
