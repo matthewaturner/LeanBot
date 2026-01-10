@@ -1,12 +1,11 @@
 /*
- * Example 3.5 - Buy and Hold IGE + Short SPY Strategy
+ * Example 3.4 - Buy and Hold Strategy for IGE
  * From "Quantitative Trading" by Ernest P. Chan
  * 
  * This strategy demonstrates:
- * 1. Loading custom data from CSV files (IGE and SPY)
+ * 1. Loading custom data from a CSV file
  * 2. Buying and holding IGE from November 26, 2001 to November 14, 2007
- * 3. Shorting an equal amount of SPY on day 1
- * 4. Using custom data with the Lean engine
+ * 3. Using custom data with the Lean engine
  */
 
 using QuantConnect;
@@ -21,12 +20,11 @@ using Bot.Data;
 namespace Bot.Strategies;
 
 /// <summary>
-/// Buy and hold strategy for IGE with SPY short hedge using custom data from epchan dataset.
+/// Buy and hold strategy for IGE using custom data from epchan dataset.
 /// </summary>
-public class Ex3_5 : QCAlgorithm
+public class QT_Ex3_4 : QCAlgorithm
 {
     private Symbol _igeSymbol;
-    private Symbol _spySymbol;
 
     /// <summary>
     /// Initialize the algorithm with date range, cash, and security selection
@@ -40,12 +38,11 @@ public class Ex3_5 : QCAlgorithm
         // Set starting cash to $100,000
         SetCash(100000);
 
-        // Add custom data for IGE and SPY
+        // Add custom data for IGE
         _igeSymbol = AddData<IGEData>("IGE").Symbol;
-        _spySymbol = AddData<SPYData>("SPY").Symbol;
         
         // Log initialization
-        Debug("Algorithm initialized: Example 3.5 - Buy and Hold IGE + Short SPY");
+        Debug("Algorithm initialized: Example 3.4 - Buy and Hold IGE");
         Debug("Configuration: No slippage, No fees, Risk-free rate = 0.04");
     }
 
@@ -56,21 +53,16 @@ public class Ex3_5 : QCAlgorithm
     /// <param name="data">Slice object containing the stock data</param>
     public override void OnData(Slice data)
     {
-        // If we don't already hold positions, enter both positions on day 1
+        // If we don't already hold the stock, buy and hold
         if (!Portfolio.Invested)
         {
-            // Check if we have data for both symbols
-            if (data.ContainsKey(_igeSymbol) && data.ContainsKey(_spySymbol))
+            // Check if we have data for our symbol
+            if (data.ContainsKey(_igeSymbol))
             {
-                // Invest 50% of the portfolio in IGE (long)
-                SetHoldings(_igeSymbol, 0.5);
+                // Invest 100% of the portfolio
+                SetHoldings(_igeSymbol, 1.0);
                 Debug($"Purchased {_igeSymbol} at {data[_igeSymbol].Price:C} on {Time}");
-                
-                // Short 50% in SPY (equal dollar amount)
-                SetHoldings(_spySymbol, -0.5);
-                Debug($"Shorted {_spySymbol} at {data[_spySymbol].Price:C} on {Time}");
-                
-                Debug($"Cash: {Portfolio.Cash:C}, Total Portfolio Value: {Portfolio.TotalPortfolioValue:C}");
+                Debug($"Cash: {Portfolio.Cash:C}, Holdings Value: {Portfolio[_igeSymbol].HoldingsValue:C}, Total: {Portfolio.TotalPortfolioValue:C}");
             }
         }
     }

@@ -1,6 +1,5 @@
 {
     "_comment": "Strategy-specific configuration that overrides global settings",
-    "strategy-name": "EpChan\\QuantitiativeTrading\\Ex3_5",
-    "algorithm-type-name": "Ex3_5",
+    "algorithm-type-name": "QT_Ex3_4",
     "close-automatically": true
 }

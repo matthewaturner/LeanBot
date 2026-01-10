@@ -66,7 +66,10 @@ if (-not $NoBuild) {
     Write-Host "[1/4] Building Bot project..." -ForegroundColor Green
     Push-Location $scriptDir
     try {
-        $buildOutput = dotnet build -c Release --nologo --verbosity quiet 2>&1
+        # Use incremental build with no-restore for faster compilation
+        # --no-restore: Skip restoring packages (do manually if needed with 'dotnet restore')
+        # -p:BuildInParallel=true: Build projects in parallel
+        $buildOutput = dotnet build -c Release --nologo --verbosity quiet --no-restore -p:BuildInParallel=true 2>&1
         $buildExitCode = $LASTEXITCODE
         
         if ($buildExitCode -ne 0) {
@@ -124,8 +127,11 @@ function Merge-Config {
 $mergedConfig = Merge-Config -base $globalConfig -override $strategyConfig
 
 # Create timestamped folder name
+# Use only the base strategy name (last part of path) for the folder name
+# This ensures consistency with how LEAN names output files (using algorithm-type-name)
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
-$resultsFolderName = "$StrategyName-$timestamp"
+$baseStrategyName = Split-Path $StrategyName -Leaf
+$resultsFolderName = "$baseStrategyName-$timestamp"
 $resultsPath = Join-Path (Join-Path $scriptDir "Results") $resultsFolderName
 
 # Create the directory
