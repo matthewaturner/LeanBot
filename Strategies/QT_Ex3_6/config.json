@@ -1,0 +1,5 @@
+{
+    "_comment": "Strategy-specific configuration that overrides global settings",
+    "algorithm-type-name": "QT_Ex3_6",
+    "close-automatically": true
+}
